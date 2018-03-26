@@ -1,0 +1,149 @@
+<style>
+  page{
+    background: #fff;
+  }
+  .finish{
+    padding-top: 80rpx;
+  }
+  .ts-icon-cg{
+    width: 100rpx;
+    height: 100rpx;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .ts-icon-cg:before{
+    content: "\e68f";
+    color: #09BB07;
+    font-size:80rpx;
+  }
+  .cgtxt{
+    padding-top: 10rpx;
+    text-align: center;
+  }
+  .finish2{
+    padding: 20rpx;
+    padding-left: 80rpx;
+    padding-right: 80rpx;
+  }
+  .finish2 button{
+    border: 1rpx solid #09BB07;
+    margin-top: 20rpx;
+    background: none;
+    color: #09BB07;
+  }
+  .finish2 button::after {
+    border: none;
+  }
+  .ckhd{
+    color: #09BB07;
+    padding-top: 10rpx;
+  }
+
+</style>
+
+<template>
+  <view class="finish">
+    <view class="finish1">
+      <view class="ts-iconfont ts-icon-cg"></view>
+      <view class="cgtxt">活动添加成功 , <span class="cgtxt ckhd" @tap="see">查看主题</span></view>
+    </view>
+    <view class="finish2">
+      <view class="shareBtn" style="margin-top: 30rpx">
+        <button type="default" open-type="share"> 分享给朋友 </button>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '活动添加成功'
+    };
+    data = {
+      themeId: '',
+      categoryId: '',
+      activityId: '',
+      categoryName: '',
+      title: '',
+      des: '',
+      imageUrl: ''
+    };
+    methods = {
+      getQRCode() {
+        let imgInfo = {
+          img: this.imageUrl,
+          title: this.title,
+          des: this.des,
+          categoryId: this.categoryId,
+          activityId: this.activityId
+        };
+        this.$parent.globalData.saveImgInfo = imgInfo;
+        wepy.navigateTo({
+          url: 'QRCode'
+        });
+      },
+      see() {
+        let me = this;
+        wepy.navigateTo({
+          url: `themeList?themeId=${me.themeId}`
+        });
+      }
+    };
+    onShareAppMessage(res) {
+      let me = this;
+      return {
+        title: `${me.title}`,
+        imageUrl: me.imageUrl,
+        path: `/pages/themeList?themeId=${me.themeId}`,
+        success: function(res) {
+          wepy.showToast({
+            title: '分享成功',
+            icon: 'success',
+            duration: 1000
+          });
+          setTimeout(function() {
+            wepy.redirectTo({
+              url: 'index'
+            });
+          }, 1000);
+        },
+        fail: function(res) {
+          wepy.showToast({
+            title: '分享失败',
+            image: '../assets/img/toast-icon.png',
+            duration: 1000
+          });
+        }
+      };
+    };
+    onHide() {
+      wepy.removeStorageSync('themeId');
+    };
+    onUnload() {
+      wepy.removeStorageSync('themeId');
+    };
+    onLoad(options) {
+      let me = this;
+      wepy.removeStorageSync('themeId');
+      me.activityId = options.themeId;
+      me.themeId = options.themeId;
+      me.categoryId = options.categoryId;
+      wepy.request({
+        url: `${me.$parent.APIServer}/guide/theme/${me.themeId}`,
+        header: {
+          'accessToken': me.$parent.globalData.accessToken
+        },
+        success: function (data) {
+          let result = data.data.data;
+          me.title = result.title;
+          me.description = result.description;
+          me.imageUrl = JSON.parse(result.activityList[0].properties).filePaths[0] || 'http://upload.ouliu.net/i/201712291020422f2wp.jpeg';
+        }
+      });
+    }
+  }
+</script>

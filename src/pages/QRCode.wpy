@@ -1,0 +1,218 @@
+<style>
+._topBars {
+  display: flex;
+  align-items: center;
+}
+  ._BarBtns{
+    flex: 1;
+  }
+  .imgBox {
+    margin-top: 20rpx;
+    background: #fff;
+    border-radius: 6rpx;
+    margin: 30rpx;
+  }
+  .imgTitle {
+    font-size: 40rpx;
+    padding: 20rpx;
+    margin: 20rpx 90rpx;
+    border-bottom: 1rpx solid #cccccc;
+    text-align: center;
+    color: #000;
+  }
+  .imgDesc {
+    text-align: center;
+    font-size: 30rpx;
+    color: #aaaaaa;
+    padding-bottom: 30rpx;
+  }
+  .imgTips {
+    text-align: center;
+    font-size: 26rpx;
+    padding: 20rpx;
+    color: #33acfe;
+  }
+  .imgFooter {
+    font-size: 20rpx;
+    color: #aaaaaa;
+    padding: 20rpx 0 30rpx 0;
+    text-align: center;
+  }
+</style>
+
+<template>
+  <view style="margin: 30rpx">
+    <view class="_topBars">
+      <view class="_BarBtns" style="text-align: left">
+        <button type="default" size="mini" hover-class="other-button-hover" @tap="back"> 返回 </button>
+      </view>
+      <view class="_BarBtns" style="text-align: center;color: red;text-decoration: blink" @tap="showTips">提示</view>
+      <view class="_BarBtns" style="text-align: right">
+        <button type="default" size="mini" hover-class="other-button-hover" @tap="saveImg"
+          style="color: #e01234;border: 1rpx solid #e01234"> 保存 </button>
+      </view>
+    </view>
+  </view>
+  <view class="imgBox">
+    <!--<image mode="aspectFit" src="{{imgInfo.img}}"></image>-->
+    <canvas style="width: 100%; height: {{windowHeight}}px;" canvas-id="firstCanvas"></canvas>
+    <!--<view class="imgTitle">{{imgInfo.title}}</view>-->
+    <!--<view class="imgDesc">{{imgInfo.des}}</view>-->
+    <!--<view class="imgTips">长按或者扫码查看全部内容</view>-->
+    <!--<image mode="aspectFit" style="width: 300rpx;height: 300rpx" src="{{imgInfo.banner}}"></image>-->
+    <!--<view class="imgFooter">微信小程序 . 王牌推手</view>-->
+  </view>
+</template>
+
+<script>
+    import wepy from 'wepy';
+    import base64 from 'base-64';
+    export default class Index extends wepy.page {
+      config = {
+        navigationBarTitleText: '保存图片分享'
+      };
+      data = {
+        imgInfo: '',
+        banner: '',
+        codeImg: '',
+        pixelRatio: '',
+        windowWidth: '',
+        windowHeight: ''
+      };
+      methods = {
+        showTips() {
+          wepy.showModal({
+            title: '提示',
+            content: '先保存下面的图片到系统相册，然后就可以分享到朋友圈啦',
+            confirmText: '我知道了',
+            confirmColor: '#33acfe',
+            showCancel: false,
+            success: function(res) {
+              if (res.confirm) {
+                console.log('用户点击确定');
+              }
+            }
+          });
+        },
+        back() {
+          wepy.navigateBack({
+            delta: 1
+          });
+        },
+        saveImg() {
+          wepy.canvasToTempFilePath({
+            canvasId: 'firstCanvas',
+            success: function(res) {
+              wepy.saveImageToPhotosAlbum({
+                filePath: res.tempFilePath,
+                success(res) {
+                  wepy.showToast({
+                    title: '保存成功',
+                    icon: 'success',
+                    duration: 1000
+                  });
+                }
+              });
+            }
+          });
+        }
+      };
+      onReady() {
+        let me = this;
+        let imgInfo = me.$parent.globalData.saveImgInfo;
+        me.imgInfo = imgInfo;
+        me.$apply();
+        let pathUrl = `pages/eventDetails?categoryId=${me.imgInfo.categoryId}&activityId=${me.imgInfo.activityId}`;
+        let path = base64.encode(pathUrl);
+        let url = `${me.$parent.APIServer}/guide/weixin/v2/wxacode?path=${path}`;
+        wepy.downloadFile({
+          url: url,
+          success(res) {
+            me.codeImg = res.tempFilePath;
+            wepy.downloadFile({
+              url: me.imgInfo.img,
+              success(res) {
+                me.banner = res.tempFilePath;
+                me.drawCanvas(me);
+              }
+          });
+          }
+        });
+      };
+      drawCanvas(me) {
+        let context = wepy.createCanvasContext('firstCanvas');
+        let imgHeight = 240;
+        let codeImgSize = 170;
+        let titleHeight = 550 / 2;
+        let desHeight = 620 / 2;
+        let codeImgTop = me.windowHeight - 210;
+        let tipsHeight = me.windowHeight - 230;
+        if (me.windowWidth === 320) {
+          imgHeight = 200;
+          codeImgSize = 140;
+          codeImgTop = me.windowHeight - 180;
+          desHeight = 520 / 2;
+          titleHeight = 470 / 2;
+          tipsHeight = me.windowHeight - 190;
+        }
+        let imageLeft = (me.windowWidth - 90) / 3;
+        let pixelRatio = 2;
+        context.setFillStyle('#FFFFFF');
+        context.fillRect(0, 0, me.windowWidth, me.windowHeight);
+        context.drawImage(me.banner, 0, 0, me.windowWidth, imgHeight);
+        context.setFillStyle('#333333');
+        context.setTextAlign('center');
+        context.setTextBaseline('middle');
+        context.setFontSize(40 / pixelRatio);
+        context.fillText(me.imgInfo.title, me.windowWidth / 2 - 10, titleHeight);
+//        context.beginPath();
+//        context.setLineWidth(1);
+//        context.moveTo(50, me.windowHeight - 375);
+//        context.lineTo(me.windowWidth - 90, me.windowHeight - 375);
+//        context.stroke();
+        context.setFillStyle('#333333');
+        context.setTextAlign('center');
+        context.setTextBaseline('middle');
+        context.setFontSize(30 / pixelRatio);
+        context.fillText(me.imgInfo.des, me.windowWidth / 2 - 10, desHeight);
+        context.setFillStyle('#33ACFE');
+        context.setTextAlign('center');
+        context.setTextBaseline('middle');
+        context.setFontSize(24 / pixelRatio);
+        context.fillText('长按或者扫码查看全部内容', me.windowWidth / 2 - 10, tipsHeight);
+        context.drawImage(me.codeImg, imageLeft, codeImgTop, codeImgSize, codeImgSize);
+        context.setFillStyle('#AAAAAA');
+        context.setTextAlign('center');
+        context.setTextBaseline('middle');
+        context.setFontSize(24 / pixelRatio);
+        context.fillText('微信小程序 . 王牌推手', me.windowWidth / 2 - 10, me.windowHeight - 25);
+        wepy.drawCanvas({
+          canvasId: 'firstCanvas',
+          actions: context.getActions()
+        });
+        me.$apply();
+      };
+      onLoad() {
+        this.$apply();
+        let me = this;
+        wepy.getSystemInfo({
+          success(res) {
+            me.pixelRatio = res.pixelRatio;
+            me.windowWidth = res.windowWidth;
+            me.windowHeight = res.windowHeight;
+            me.$apply();
+          }
+        });
+//        var context = wepy.createCanvasContext('firstCanvas');
+//        context.setFillStyle('White');
+//        context.fillRect(0, 0, 600, 600);
+//        context.draw();
+//        context.drawImage(imgInfo.img, 0, 0, 390, 240);
+//        context.setFontSize(20);
+//        context.setTextAlign('center');
+//        context.fillText(imgInfo.title, 160, 300);
+//        context.drawImage(bannerImg, 100, 450, 150, 150);
+//        context.draw();
+      }
+    }
+</script>

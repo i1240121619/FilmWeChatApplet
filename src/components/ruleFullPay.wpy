@@ -1,0 +1,42 @@
+<template>
+  <view  class='rulesPanel' style="margin-bottom: 20rpx">
+    <text style="color: #000;font-size: 34rpx">活动规则 </text>
+    <view class="content">
+      <view>
+        <view class="indent">
+          1 ) 活动截止日期：发布结束的日期。
+          消费截止日期：服务型活动的到店消费截止日期。
+        </view>
+        <view class="indent">
+          2 ) 价高者得。
+        </view>
+        <view class="indent">
+          3 ) 如果所有竞标出价总和（最终价）小于标价，最终价可作为物品或服务的等值折扣使用。
+        </view>
+        <view class="indent">
+          4 ) 不论最后谁中标，所有的投标人付出的投标出价不退还。
+        </view>
+        <view class="indent">
+          5 ) 如果大于物品或服务价值，超出部分按人均相应比例退还至我的余额。
+        </view>
+        <view class="indent">
+          6 ) 在王牌推手确认收到物品或消费服务后，我们会放款给发布者；或中标人在消费或收货后第7个工作日仍然没有确认，付款将自动转与商家。
+        </view>
+        <view class="indent">
+          7 ) 如果是购得实物，请与发布人直接联系物流。
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy';
+  export default class ruleFullPay extends wepy.component {
+    props = {
+    };
+    data = {
+    };
+    methods = {
+    };
+  }
+</script>

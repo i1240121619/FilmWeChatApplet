@@ -1,0 +1,169 @@
+<style>
+  .release {
+    color: #7b7b7b;
+    background: #fff;
+    height: 136rpx;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    border-top: 1px solid #dad9d6;
+    font-size: 24rpx;
+    white-space: nowrap;
+    z-index: 999;
+    display: flex;
+  }
+  button.editShare_item{
+    background: none;
+    text-decoration:none;
+    font-size:inherit;
+    line-height:inherit;
+  }
+  button.editShare_item::after {
+    border: none;
+  }
+  .editShare_item {
+    text-align: center;
+    padding-top: 20rpx;
+    flex: 1;
+    color: #83838f;
+  }
+  .edittitle {
+    padding-top: 6rpx;
+  }
+  .ts-release{
+    color: #E01234;
+  }
+  .ts-icon-release:before{
+    content: "\e658";
+  }
+  .ts-icon-xg:before{
+    content: "\e838";
+  }
+</style>
+<template>
+  <view class="release">
+    <button class="editShare_item ts-release" @tap="relaseNow()">
+      <span class="ts-iconfont ts-icon-release" style="font-size: 50rpx;"></span>
+      <view class="edittitle">发布</view>
+    </button>
+    <button class="editShare_item" @tap="modify()">
+      <span class="ts-iconfont ts-icon-xg" style="font-size: 50rpx;"></span>
+      <view class="edittitle">修改</view>
+    </button>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy';
+  export default class release extends wepy.component {
+    props = {
+      activityId: {
+        type: Number
+      },
+      categoryId: {
+        type: Number
+      },
+      themeId: {
+        type: Number
+      },
+      source: {
+        type: String
+      }
+    };
+    data = {
+    };
+    methods = {
+      relaseNow() {
+        wepy.showLoading({title: '发布中', mask: true});
+        let me = this;
+        wepy.request({
+          url: `${me.$parent.$parent.$parent.APIServer}/guide/activity/publish`,
+          method: 'POST',
+          header: {
+            'accessToken': me.$parent.$parent.$parent.globalData.accessToken
+          },
+          data: {
+            id: me.activityId
+          },
+          success: function (data) {
+            wepy.hideLoading();
+            let result = data.data.data;
+            if (result) {
+              wepy.showToast({
+                title: '发布成功',
+                icon: 'success',
+                duration: 1000
+              });
+              setTimeout(function () {
+                if (me.source === 'theme') {
+                  me.bindTheme();
+                } else {
+                  wepy.redirectTo({
+                    url: `activityReleaseCompleted?activityId=${result.id}`
+                  });
+                }
+              }, 1000);
+            } else {
+              wepy.showModal({
+                title: '发布失败',
+                showCancel: false,
+                content: data.data.error
+              });
+            }
+          }
+        });
+      },
+      modify() {
+        let me = this;
+        wepy.redirectTo({
+          url: `activeForms?&themeId=${me.themeId}&source=${me.source}&categoryId=${me.categoryId}&activityId=${me.activityId}&activeFormsType=2`
+        });
+      }
+    };
+    bindThemeAjax() {
+      let me = this;
+      let postData = {
+        activityId: me.activityId,
+        themeId: me.themeId
+      };
+      wepy.request({
+        url: `${me.$parent.$parent.$parent.APIServer}/guide/theme/join`,
+        method: 'POST',
+        header: {
+          'accessToken': me.$parent.$parent.$parent.globalData.accessToken
+        },
+        data: postData,
+        success: function (data) {
+          wepy.hideLoading();
+          let result = data.data.data;
+          if (result) {
+            wepy.showToast({
+              title: '绑定成功',
+              icon: 'success',
+              duration: 1000
+            });
+            setTimeout(function () {
+              wepy.redirectTo({
+                url: `themeReleaseCompleted?themeId=${me.themeId}&categoryId=${me.categoryId}&activityId=${me.activityId}`
+              });
+            }, 1000);
+          } else {
+            if (data.data.stat !== 200) {
+              wepy.showModal({
+                title: '绑定失败',
+                showCancel: false,
+                content: data.data.error
+              });
+            }
+          }
+        }
+      });
+    };
+    bindTheme() {
+      let me = this;
+      wepy.showLoading({title: '绑定主题中', mask: true});
+      setTimeout(function () {
+        me.bindThemeAjax();
+      }, 2000);
+    };
+  }
+</script>

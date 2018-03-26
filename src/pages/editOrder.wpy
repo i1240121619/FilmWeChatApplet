@@ -1,0 +1,272 @@
+<style>
+  .forms {
+    margin: 20rpx 20rpx;
+    background: #fff;
+  }
+  .section {
+    margin: 20rpx;
+    border-bottom: 1px solid #cccccc;
+    display: flex;
+    width: 100%;
+  }
+  .inputLabel {
+    line-height: 50rpx;
+    padding-right: 20rpx;
+    white-space:nowrap;
+  }
+  .LRLayout {
+    display: flex;
+    justify-content: space-between;
+  }
+  .btns {
+    margin: 20rpx;
+    display: flex;
+    width: 100%;
+    margin-bottom: 0;
+  }
+  .radioBox {
+    margin:20rpx;
+  }
+
+</style>
+
+<template>
+  <view class="forms">
+    <view class="LRLayout" style="padding-top: 10rpx">
+      <view class="section" style="border-bottom: none; margin-top: 0; margin-bottom: 0">
+        <view class="inputLabel">订单号：</view>
+        <input value="{{orderId}}" disabled/>
+      </view>
+    </view>
+    <view class="LRLayout">
+      <view class="section" style="border-bottom: none; margin-top: 0; margin-bottom: 0">
+        <view class="inputLabel">商品名称：</view>
+        <input value="{{name}}" disabled/>
+      </view>
+    </view>
+    <view class="LRLayout">
+      <view class="section" style="border-bottom: none; margin-top: 0; margin-bottom: 0">
+        <view class="inputLabel">价格：</view>
+        <input type="number" value="{{amount}}" disabled/>
+      </view>
+    </view>
+    <view class="LRLayout">
+      <view class="section" style="border-bottom: none; margin-top: 0; margin-bottom: 0">
+        <view class="inputLabel">姓名：</view>
+        <input value="{{buyerName}}" disabled/>
+      </view>
+    </view>
+    <view class="LRLayout">
+      <view class="section" style="border-bottom: none; margin-top: 0; margin-bottom: 0">
+        <view class="inputLabel">地址：</view>
+        <input value="{{province}} {{city}} {{address}}" disabled/>
+      </view>
+    </view>
+    <view class="LRLayout">
+      <view class="section" style="border-bottom: none; margin-top: 0; margin-bottom: 0">
+        <view class="inputLabel">电话：</view>
+        <input value="{{phone}}" disabled/>
+      </view>
+    </view>
+    <form bindsubmit="submit" report-submit="true">
+      <picker bindchange="bindPickerChange" value="{{index}}" range="{{array}}">
+      <view class="LRLayout">
+        <view class="section">
+          <view class="inputLabel">物流公司：</view>
+          <input type="text" value="{{logistics}}" disabled @input="changeValue('logistics')"/>
+        </view>
+      </view>
+      </picker>
+      <view class="LRLayout">
+        <view class="section">
+          <view class="inputLabel">运单号：</view>
+          <input type="text" value="{{waybillNumber}}" @input="changeValue('waybillNumber')"/>
+        </view>
+      </view>
+      <view class="LRLayout">
+        <view class="btns">
+          <button type="primary" form-type="submit" style="width: 100%"> 提交 </button>
+        </view>
+      </view>
+    </form>
+  </view>
+  <alert/>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import alert from '../components/alert';
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '输入运单号'
+    };
+    data = {
+      orderId: '',
+      name: '',
+      amount: '',
+      remark: '',
+      province: '',
+      city: '',
+      address: '',
+      buyerName: '',
+      phone: '',
+      logistics: '',
+      waybillNumber: '',
+      array: [],
+      expressList: [],
+      editMode: '',
+      postData: '',
+      formId: ''
+    };
+    components = {
+      alert
+    };
+    methods = {
+      bindPickerChange: function(e) {
+        this.logistics = this.array[e.detail.value];
+      },
+      changeValue(val, e) {
+        this[val] = e.detail.value.replace(/\s+/g, '');
+        this.$apply();
+      },
+      async submit(e) {
+        let me = this;
+        await me.check();
+        me.formId = e.detail.formId;
+        if (me.editMode === '1') {
+          me.edit();
+        } else {
+          me.modify();
+        }
+      }
+    };
+    edit() {
+      let me = this;
+      wepy.showLoading({title: '提交中', mask: true});
+      wepy.request({
+        url: `${me.$parent.APIServer}/guide/order/shipment`,
+        method: 'POST',
+        header: {
+          'accessToken': me.$parent.globalData.accessToken
+        },
+        data: me.postData,
+        success: function (data) {
+          wepy.hideLoading();
+          let result = data.data.data;
+          if (result) {
+            wepy.showToast({title: '提交成功', mask: 1, duration: 1500});
+            setTimeout(function () {
+              wepy.navigateBack({
+                delta: 1
+              });
+            }, 1500);
+          } else {
+            me.$invoke('alert', 'alertFun', data.data.error);
+          }
+        }
+      });
+    };
+    modify() {
+      let me = this;
+      wepy.showLoading({title: '修改中', mask: true});
+      wepy.request({
+        url: `${me.$parent.APIServer}/guide/order/shipment`,
+        method: 'PUT',
+        header: {
+          'accessToken': me.$parent.globalData.accessToken
+        },
+        data: me.postData,
+        success: function (data) {
+          wepy.hideLoading();
+          let result = data.data.data;
+          if (result) {
+            wepy.showToast({title: '修改成功', mask: 1, duration: 1500});
+            setTimeout(function () {
+              wepy.navigateBack({
+                delta: 1
+              });
+            }, 1500);
+          } else {
+            me.$invoke('alert', 'alertFun', data.data.error);
+          }
+        }
+      });
+    };
+    check() {
+      let me = this;
+      return new Promise((resolve, reject) => {
+        if (!me.logistics) {
+          me.$invoke('alert', 'alertFun', '请选择快递公司');
+          return false;
+        }
+        if (!me.waybillNumber) {
+          me.$invoke('alert', 'alertFun', '请输入运单号');
+          return false;
+        }
+        let expressNo;
+        for (let i = 0; i < me.expressList.length; i++) {
+          if (me.expressList[i].name === me.logistics) {
+            expressNo = me.expressList[i].code;
+            break;
+          }
+        }
+        let postData = {
+          expressCode: expressNo,
+          expressNo: me.waybillNumber,
+          orderId: me.orderId,
+          formId: me.formId
+        };
+        me.postData = postData;
+        resolve(true);
+      });
+    };
+    onLoad(options) {
+      let me = this;
+      me.orderId = options.orderId;
+      me.editMode = options.editMode;
+      if (me.editMode === '2') {
+        wepy.setNavigationBarTitle({title: '修改运单号'});
+      };
+      wepy.request({
+        url: `${me.$parent.APIServer}/guide/express/list`,
+        method: 'GET',
+        header: {
+          'accessToken': me.$parent.globalData.accessToken
+        },
+        success: function (data) {
+          let result = data.data.data;
+          if (result) {
+            me.expressList = result;
+            me.expressList.forEach(function (item, index) {
+                me.array.push(item.name);
+            });
+            me.$apply();
+          }
+        }
+      });
+      wepy.request({
+        url: `${me.$parent.APIServer}/guide/order/${me.orderId}`,
+        method: 'GET',
+        header: {
+          'accessToken': me.$parent.globalData.accessToken
+        },
+        success: function (data) {
+          let result = data.data.data;
+          if (result) {
+            me.name = result.activity.name;
+            me.amount = result.subOrders[0].price;
+            me.remark = result.remark;
+            me.province = JSON.parse(result.address).province;
+            me.city = JSON.parse(result.address).city;
+            me.address = JSON.parse(result.address).address;
+            me.buyerName = JSON.parse(result.address).name;
+            me.phone = JSON.parse(result.address).phone;
+            me.logistics = result.extra.name;
+            me.waybillNumber = result.extra.no;
+            me.$apply();
+          }
+        }
+      });
+    };
+  }
+</script>

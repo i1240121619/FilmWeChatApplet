@@ -1,0 +1,49 @@
+<template>
+  <alert/>
+</template>
+<script>
+  import wepy from 'wepy';
+  import alert from '../components/alert';
+  export default class activeStateCheck extends wepy.component {
+    props = {
+      activityId: Number,
+      APIServer: String,
+      accessToken: String,
+      describeStr: String
+    };
+    data = {
+    };
+    components = {
+      alert
+    };
+    activeStateCheckFun(val) {
+      let me = this;
+      wepy.request({
+        url: `${me.APIServer}/guide/activity/status/${me.activityId}`,
+        method: 'GET',
+        header: {
+          'accessToken': me.accessToken
+        },
+        success: function (data) {
+          let result = data.data.data;
+          if (result) {
+            let describeArray = me.describeStr.split('|');
+            if (result.status === 2) {
+              me.$emit('goBuy', val);
+            } else if (result.status === 4) {
+              me.$invoke('alert', 'alertFun', describeArray[0]);
+            } else if (result.status === 5) {
+              me.$invoke('alert', 'alertFun', describeArray[1]);
+            } else if (result.status === 1) {
+              me.$invoke('alert', 'alertFun', describeArray[2]);
+            } else if (result.status === 3) {
+              me.$invoke('alert', 'alertFun', describeArray[3]);
+            } else {
+              me.$invoke('alert', 'alertFun', describeArray[4]);
+            }
+          }
+        }
+      });
+    }
+  }
+</script>

@@ -1,0 +1,128 @@
+<style>
+  page{
+    background: #ededed;
+  }
+  .box2{
+    background: #fff;
+    display: flex;
+    padding: 20rpx 30rpx;
+    border-bottom: 1px solid #d9d9d9;
+  }
+  .box21{
+    flex: 1;
+
+  }
+  .box211{
+    font-size: 28rpx;
+  }
+
+  .box211{
+    font-size: 32rpx;
+  }
+  .box212{
+    margin-top: 10rpx;
+    color: #999;
+  }
+  .box222{
+    margin-top: 10rpx;
+    font-size: 32rpx;
+    text-align: right;
+  }
+  .box221{
+    font-size: 30rpx;
+    text-align: right;
+  }
+  .ys1{
+    color: #00a1db;
+  }
+  .ys2{
+    color: #1AAD19;
+  }
+  .ys3{
+    color: #E01234;
+  }
+
+  .noRelease {
+    margin-top: 200rpx;
+    text-align: center;
+    color: #7b7b7b;
+    font-size: 32rpx;
+  }
+
+</style>
+
+<template>
+  <view class="noRelease" wx:if="{{list.length == 0}}">您暂时还没有记录</view>
+  <view class="box2" wx:for="{{list}}" wx:key="{{index}}">
+    <view class="box21">
+      <view class="box211">
+        {{item.typeValue}}
+      </view>
+      <view class="box212">
+        {{item.createTime}}
+      </view>
+    </view>
+    <view class="box22">
+      <block wx:if="{{item.type == 1}}"><view class="box221 ys3">-{{item.expense}}</view></block>
+      <block wx:if="{{item.type == 2}}"><view class="box221 ys1">+{{item.income}}</view></block>
+      <block wx:if="{{item.type == 3}}"><view class="box221 ys2">+{{item.income}}</view></block>
+    </view>
+  </view>
+
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import {formatDate} from '../common/date';
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '交易记录'
+    };
+    data = {
+      list: []
+    };
+    methods = {
+      currentBankFun(currentBank) {
+        this.currentBank = currentBank;
+        this.$parent.globalData.currentBank = this.currentBank;
+        wepy.navigateTo({
+          url: `cashWithdrawal`
+        });
+      },
+      addCord() {
+        wepy.navigateTo({
+          url: `bindBankCard`
+        });
+      }
+    };
+    getData() {
+      let me = this;
+      wepy.request({
+        url: `${this.$parent.APIServer}/guide/encash/bill`,
+        method: 'GET',
+        header: {
+          'accessToken': this.$parent.globalData.accessToken
+        },
+        data: {
+          page: {
+            pageNo: 1,
+            pageSize: 99999
+          }
+        },
+        success(data) {
+          let result = data.data.data;
+          if (result) {
+            for (let i in result.list) {
+              result.list[i].createTime = formatDate(result.list[i].createTime, 'Y-m-d H:i:s');
+            }
+            me.list = result.list;
+            me.$apply();
+          }
+        }
+      });
+    };
+    onLoad() {
+      this.getData();
+    }
+  }
+</script>

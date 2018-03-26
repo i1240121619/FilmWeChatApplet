@@ -1,0 +1,296 @@
+<style>
+  page {
+    height: 100%;
+  }
+  .slogan {
+    padding: 20rpx 0 20rpx 20rpx;
+    color:  #686868;
+  }
+  .rulesPanel {
+    border-radius: 6rpx;
+    background: #fff;
+    margin: 20rpx 0;
+    margin-top: 0;
+    color: #7b7b7b;
+    padding:20rpx 20rpx;
+    border-bottom: 1rpx solid #f3f3f3;
+    border-top: 1rpx solid #f3f3f3;
+    line-height: 1.8;
+  }
+  .formItem {
+    border-bottom: 1rpx solid #f3f3f3;
+    border-top: 1rpx solid #f3f3f3;
+    background: #fff;
+    padding: 20rpx;
+    display:flex;
+    margin: 20rpx 0;
+  }
+  .formItem-titl{
+    white-space:nowrap;
+    margin:8rpx 8rpx 0 0 ;
+  }
+  .formItem input,.LRLayout input{
+    flex: 1;
+  }
+  .formItem textarea{
+    width: 100%;
+    height: 70rpx;
+  }
+  .LRLayout{
+    margin-top: 25rpx;
+    padding: 25rpx;
+  }
+</style>
+
+<template>
+  <view class="slogan">做个活雷锋！造个福利分享出去！</view>
+  <view class='rulesPanel' @tap="togglePanel">
+    <text style="color:#33acfe">点我查看主题活动规则 </text>
+    <view class="content" wx:if="{{hideRule}}">
+      <view>
+        <view class="subTitle">主题活动规则：</view>
+        <view class="indent">
+          1、在限定的时间内竞价标的的竞价由高到低依次递减直到第一个竞价人应价（达到或超过底价）时击槌成交的一种竞价交易。
+        </view>
+        <view class="indent">
+          2、原价：从什么价格开始降。一般为立即购买的价格。
+          底价：最低能降到的底价。客户出价必须大于等于底价才能成交。
+          活动截止日期：发布结束的日期。
+          消费截止日期：服务型活动的到店消费截止日期。
+        </view>
+        <view class="indent">
+          3、竞价者可1元预订一个购买价格。可多次出价定价。出价不退款。
+        </view>
+        <view class="indent">
+          4、在价格降到竞价者预订价格时，我们通过绑定的公众服务号提醒中标者。中标人有5分钟时间付款。在限定时间内未完成付款，价格继续下降直到降到下一位竞买者。
+        </view>
+        <view class="indent">
+          5、竞价中标原则：先按价格由高至低，然后时间先后顺序直至竞价结束。
+        </view>
+        <view class="indent">
+          6、在王牌推手确认收到物品或消费服务后，我们会放款给发布者；或中标人在消费或收货后第7个工作日仍然没有确认，付款将自动转与商家。
+        </view>
+        <view class="indent">
+          7、如果是购得实物，请与发布人直接联系物流。
+        </view>
+      </view>
+    </view>
+  </view>
+  <view class="formItem">
+    <view class="formItem-titl">主题名称：</view>
+    <input type="text" placeholder=" (必填)" @input="changeVal('name')"
+           placeholder-style="color: #ccc" value="{{name}}"/>
+  </view>
+  <view class="formItem">
+    <textarea placeholder-style="color: #ccc" maxlength="50" value="{{description}}"
+              placeholder="请描述主题 (必填，字数不得超过50字)"  @input="changeVal('description')"/>
+  </view>
+
+  <view class="LRLayout">
+    <view class="btns">
+      <button type="primary" @tap="modify()" style="width: 100%" wx:if="{{themeId}}"> 下一步 </button>
+      <button type="primary" @tap="newTheme()" style="width: 100%" wx:else> 下一步 </button>
+    </view>
+  </view>
+  <alert/>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import alert from '../components/alert';
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '新建主题'
+    };
+    data = {
+      isFirstPerson: '',  // 是不是第一个人
+      editType: '', // 编辑类型
+      themeId: '', // 主题ID
+      name: '', // 主题名称
+      description: '', // 主题详情
+      activityList: [], // 活动列表
+      activityId: '', // 关联的活动ID
+      hideRule: false, // 规则描述
+      postData: '', // 发布时需要的所有数据与结构
+      activeItme: '',
+      img: []
+    };
+    components = {
+      alert
+    };
+    methods = {
+      deletePictures(index) {
+        this.img.splice(index, 1);
+        this.$apply();
+      },
+      uploadImg() {
+        let me = this;
+        wepy.chooseImage({
+          success: function (res) {
+            var tempFilePaths = res.tempFilePaths;
+            for (let i in tempFilePaths) {
+              wepy.uploadFile({
+                url: `${me.$parent.APIServer}/guide/file/upload`,
+                header: {
+                  'Content-Type': 'multipart/form-data',
+                  'accessToken': me.$parent.globalData.accessToken
+                },
+                filePath: tempFilePaths[i],
+                name: 'file',
+                success: function(res) {
+                  let filepath = JSON.parse(res.data).data;
+                  me.img.push(filepath);
+                  me.$apply();
+                }
+              });
+            }
+          }
+        });
+      },
+      togglePanel() {
+        this.hideRule = !this.hideRule;
+        this.$apply();
+      },
+      changeVal(keys, e) {
+        this[keys] = e.detail.value;
+        this.$apply();
+      },
+      deleteActivity() {
+        wepy.removeStorageSync('activeItme');
+      },
+      choiceActivities() {
+        wepy.navigateTo({
+          url: `activeLibrary`
+        });
+      }
+    };
+    async modify() {
+      wepy.showLoading({title: '新建中', mask: true});
+      let me = this;
+      await me.check();
+      let postData = me.postData;
+      wepy.request({
+        url: `${me.$parent.APIServer}/guide/theme/${me.themeId}`,
+        method: 'PUT',
+        header: {
+          'accessToken': me.$parent.globalData.accessToken
+        },
+        data: postData,
+        success: function (data) {
+          wepy.hideLoading();
+          let result = data.data.data;
+          if (result) {
+            wepy.navigateTo({
+              url: `category?themeId=${me.themeId}&source=theme`
+            });
+          } else {
+            wepy.showModal({
+              title: '新建主题失败',
+              showCancel: false,
+              content: data.data.error
+            });
+          }
+        }
+      });
+    };
+    async newTheme() {
+      wepy.showLoading({title: '新建中', mask: true});
+      let me = this;
+      await me.check();
+      let postData = me.postData;
+      wepy.request({
+        url: `${me.$parent.APIServer}/guide/theme`,
+        method: 'POST',
+        header: {
+          'accessToken': me.$parent.globalData.accessToken
+        },
+        data: postData,
+        success: function (data) {
+          wepy.hideLoading();
+          let result = data.data.data;
+          if (result) {
+            me.themeId = result.id;
+            wepy.setStorageSync('themeId', me.themeId);
+            wepy.navigateTo({
+              url: `category?themeId=${me.themeId}&source=theme`
+            });
+          } else {
+            wepy.showModal({
+              title: '新建主题失败',
+              showCancel: false,
+              content: data.data.error
+            });
+          }
+        }
+      });
+    }; // 新增主题
+    check() {
+      let me = this;
+      wepy.hideLoading();
+      return new Promise((resolve, reject) => {
+        if (!me.name) {
+          me.$invoke('alert', 'alertFun', '主题名称不能为空');
+          return false;
+        }
+        if (!me.description) {
+          me.$invoke('alert', 'alertFun', '主题详情不能为空');
+          return false;
+        }
+        let postData = {
+          description: me.description,
+          title: me.name,
+          isPublic: true,
+          properties: JSON.stringify({filePaths: me.img})
+        };
+        me.postData = postData;
+        resolve(true);
+      });
+    };
+    init() {
+      this.isFirstPerson = ''; // 是不是第一个人
+      this.editType = ''; // 编辑类型
+      this.themeId = ''; // 主题ID
+      this.name = ''; // 主题名称
+      this.img = []; // 主题图片
+      this.description = ''; // 主题详情
+      this.postData = ''; // 发布时需要的所有数据与结构
+      this.hideRule = false; // 规则描述
+      this.activeItme = '';
+    };
+    getThemeAjax() {
+      let me = this;
+      wepy.request({
+        url: `${me.$parent.APIServer}/guide/theme/${me.themeId}`,
+        method: 'GET',
+        header: {
+          'accessToken': me.$parent.globalData.accessToken
+        },
+        success: function (data) {
+          let result = data.data.data;
+          if (result) {
+            me.name = result.title;
+            me.description = result.description;
+          }
+          me.$apply();
+        }
+      });
+    };
+    onShow() {
+      let me = this;
+      me.init();
+      if (wepy.getStorageSync('themeId')) {
+        me.themeId = wepy.getStorageSync('themeId');
+        me.getThemeAjax();
+      }
+    };
+    onLoad(options) {
+      let me = this;
+      me.init();
+      me.editType = options.editType;
+      if (me.editType === 'modify') {
+        me.themeId = options.themeId;
+      }
+      me.$apply();
+    }
+  }
+</script>

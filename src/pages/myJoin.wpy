@@ -1,0 +1,188 @@
+<style>
+  .noRelease {
+    margin-top: 200rpx;
+    text-align: center;
+    color: #7b7b7b;
+    font-size: 32rpx;
+  }
+  /* new style*/
+  .listBody {
+    margin-top: 20rpx;
+    width: 100%;
+  }
+  .AcItem {
+    background: #fff;
+    margin: 30rpx 0;
+  }
+  .AcItemContent1 {
+    display: flex;
+    border-bottom: 1rpx solid #eeeeee;
+  }
+  .AcItemContent2 {
+    display: flex;
+    align-items: baseline;
+  }
+  .AcItemPic {
+    flex: 2;
+    padding: 20rpx;
+    width: 140rpx;
+    height: 100rpx;
+  }
+  .AcItemDetails {
+    flex: 5;
+  }
+  .AcItemDetailsTitle {
+    font-size: 34rpx;
+    color: #000;
+    padding: 15rpx 20rpx;
+  }
+  .AcItemDetailsDes {
+    font-size: 26rpx;
+    color: #bbbbbb;
+    padding: 0rpx 20rpx 20rpx 20rpx;
+  }
+  .AcItemDetailsBar {
+    padding: 30rpx 20rpx;
+    border-top: 1rpx solid #eeeeee;
+  }
+  .leftContent {
+    padding: 30rpx 20rpx 30rpx 30rpx;
+    flex: 8;
+  }
+  .rightBtn {
+    flex: 3;
+    text-align: center;
+    font-weight: bold;
+    font-size: 34rpx;
+    color: #e01234;
+    padding: 30rpx 0;
+    border-left: 1rpx solid #eeeeee;
+  }
+  .gray {
+    color: #bbbbbb;
+  }
+  .orange {
+    color: orange;
+  }
+</style>
+
+<template>
+  <view class="noRelease" wx:if="{{currentList.length == 0}}">您暂时还没有参加过的活动</view>
+  <view class="listBody">
+    <block wx:for='{{currentList}}' wx:key='{{index}}'>
+      <view class="AcItem" @tap="activityDetail({{index}})">
+        <view class="AcItemContent1">
+          <view class="AcItemPic">
+            <image class='item-icon' mode='aspectFit' src='{{item.properties.filePaths[0]}}'
+                   style="width: 160rpx;height: 160rpx"></image>
+          </view>
+          <view class="AcItemDetails">
+            <view class="AcItemDetailsTitle">{{item.name ? item.name : '未命名'}}</view>
+            <view class="AcItemDetailsDes">{{item.description}}</view>
+            <view class="AcItemDetailsBar">
+              <text style="color: #e01234" wx:if="{{item.categoryId == 100}}">底价 : ￥{{item.products[0].floorPrice}}</text>
+              <text style="float: right" wx:if="{{item.categoryId == 100}}">初始价 : ￥{{item.products[0].salePrice}}</text>
+              <text wx:if="{{item.categoryId == 101}}">初始价 : ￥{{item.products[0].salePrice}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="AcItemContent2">
+          <view class="leftContent">
+            <span class="iconfont icon-clock" style="color: #bfbfbf;font-size: 26rpx"></span>
+            <text style="color: #aaaaaa;"> 结束时间：{{item.endTime}}</text>
+          </view>
+          <view class="rightBtn" wx:if="{{item.status === 2}}">{{item.statusValue}}</view>
+          <view class="rightBtn gray" wx:if="{{item.status === 5}}">{{item.statusValue}}</view>
+          <view class="rightBtn orange" wx:if="{{item.status === 1}}">{{item.statusValue}}</view>
+        </view>
+      </view>
+    </block>
+  </view>
+
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import {formatDate} from '../common/date';
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '我参加的'
+    };
+    data = {
+      category: 'all',
+      currentList: '',
+      releaseList: '',
+      lowPriceList: [],
+      allPayList: []
+    };
+    methods = {
+      switchCategory(type) {
+        this.category = type;
+        let me = this;
+        switch (type) {
+          case 'all':
+            me.currentList = this.releaseList;
+            break;
+          case 'lowPrice':
+            me.currentList = this.lowPriceList;
+            break;
+          case 'allPay':
+            me.currentList = this.allPayList;
+            break;
+        }
+        this.$apply();
+      },
+      activityDetail(index) {
+        wepy.navigateTo({
+          url: `activity?productId=${this.releaseList[index].id}`
+        });
+      }
+    };
+    onLoad() {
+      let me = this;
+      this.lowPriceList = [];
+      this.allPay = [];
+      this.$apply();
+      this.$parent.globalData.releaseDetail = null;
+      wepy.request({
+        url: `${this.$parent.APIServer}/guide/activity/list/join/me`,
+        method: 'POST',
+        header: {
+          'accessToken': this.$parent.globalData.accessToken
+        },
+        data: {
+          pageNo: 1,
+          pageSize: 1000
+        },
+        success: function (data) {
+          let result = data.data.data;
+          if (result) {
+            let list = result.list;
+            for (let i in list) {
+              if (list[i].createTime > 0) {
+                list[i].endTime = formatDate(list[i].endTime, 'Y/m/d H:i');
+                list[i].createTime = formatDate(list[i].createTime, 'Y/m/d H:i');
+                list[i].properties = JSON.parse(list[i].properties);
+                if (list[i].status === 2) {
+                  list[i].statusValue = '进行中';
+                } else if (list[i].status === 5) {
+                  list[i].statusValue = '已结束';
+                } else if (list[i].status === 1) {
+                  list[i].statusValue = '未发布';
+                }
+              }
+              if (list[i].categoryId === 100) {
+                me.lowPriceList.push(list[i]);
+              } else if (list[i].categoryId === 101) {
+                me.allPayList.push(list[i]);
+              }
+            }
+            me.releaseList = list;
+            me.currentList = list;
+            me.$apply();
+          }
+        }
+      });
+    }
+  }
+</script>

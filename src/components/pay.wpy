@@ -1,0 +1,108 @@
+<template>
+  <alert/>
+</template>
+<script>
+  import wepy from 'wepy';
+  import {hex_md5} from '../common/md5';
+  import alert from '../components/alert';
+  export default class pay extends wepy.component {
+    data = {
+      orderId: '',
+      categoryId: '',
+      activityId: '',
+      tuanId: '',
+      APIServer: '',
+      accessToken: '',
+      type: '',
+      sTxt: '',
+      fTxt: ''
+    };
+    components = {
+      alert
+    };
+    goPay(data) {
+      let me = this;
+      let payData = JSON.parse(data);
+      me.orderId = payData.orderId || me.$invoke('alert', 'alertFun', 'orderId不能为空');
+      me.categoryId = payData.categoryId || me.$invoke('alert', 'alertFun', 'categoryId不能为空');
+      me.activityId = payData.activityId || me.$invoke('alert', 'alertFun', 'activityId不能为空');
+      me.APIServer = payData.APIServer;
+      me.accessToken = payData.accessToken;
+      me.sTxt = payData.sTxt;
+      me.fTxt = payData.fTxt;
+      me.tuanId = payData.tuanId;
+      me.type = payData.type;
+      if (me.orderId) {
+        wepy.request({
+          url: `${this.APIServer}/guide/pay`,
+          method: 'GET',
+          header: {
+            'accessToken': this.accessToken
+          },
+          data: {orderId: me.orderId},
+          success: function (data) {
+            let result = data.data.data;
+            if (result) {
+              me.requestPayment(result.prepay_id, result.key);
+              // me.jumpUrl();
+            } else {
+              me.$invoke('alert', 'alertFun', data.data.error);
+            }
+          }
+        });
+      }
+    };
+    requestPayment(PrePayId, serKey) {
+      let me = this;
+      let timeStamp = Date.parse(new Date()) / 1000;
+      let packages = `prepay_id=${PrePayId}`;
+      let nonceStr = this.randomWord(32);
+      let stringSignTemp = `appId=wx7f2cf2f448566239&nonceStr=${nonceStr}&package=${packages}&signType=MD5&timeStamp=${timeStamp}&key=${serKey}`;
+      let paySign = hex_md5(stringSignTemp).toUpperCase();
+      wepy.requestPayment({
+        timeStamp: JSON.stringify(timeStamp),
+        nonceStr: nonceStr,
+        package: packages,
+        signType: 'MD5',
+        paySign: paySign,
+        success() {
+          wepy.showToast({
+            title: me.sTxt,
+            icon: 'success',
+            mask: 1,
+            duration: 1500
+          });
+          me.jumpUrl();
+        },
+        fail() {
+          wepy.showToast({title: me.fTxt, image: '../assets/img/toast-icon.png', mask: 1, duration: 2000});
+        }
+      });
+    };
+    jumpUrl() {
+      let me = this;
+      let url = `paymentCompleted?categoryId=${me.categoryId}&activityId=${me.activityId}&orderId=${me.orderId}&type=${me.type}&tuanId=${me.tuanId}`;
+      setTimeout(function () {
+        wepy.redirectTo({
+          url: url
+        });
+      }, 1500);
+    };
+    onHide() {
+      this.$invoke('paymentCompletedGroupPurchase', '_clearInterval');
+    };
+    onUnload() {
+      this.$invoke('paymentCompletedGroupPurchase', '_clearInterval');
+    };
+    randomWord(min) {
+      let str = '';
+      let range = min;
+      let arr = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+      for (var i = 0; i < range; i++) {
+        let pos = Math.round(Math.random() * (arr.length - 1));
+        str += arr[pos];
+      }
+      return str;
+    }
+  }
+</script>

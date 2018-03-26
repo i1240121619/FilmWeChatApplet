@@ -1,0 +1,260 @@
+<style>
+  .container{
+    width: 100%;
+  }
+  .status-box{
+    width: 100%;
+    height: 88rpx;
+    line-height: 88rpx;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    position: flex;
+    top: 0;
+    z-index: 10;
+  }
+  .status-box .active{
+    color: #e01234;
+    font-weight: bold;
+    font-size: 32rpx;
+  }
+  .active:after{
+    content: "";
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 6rpx;
+    background: #e01234;
+  }
+  .status-label{
+    color: #83838f;
+    font-size: 30rpx;
+    height: 100%;
+    flex: 1;
+    text-align: center;
+    position: relative;
+  }
+  .theme-list{
+    width: 100%;
+  }
+  .theme-item{
+    background-color: #fff;
+    margin-top: 20rpx;
+  }
+  .theme-item-top{
+    padding: 15rpx 25rpx;
+    font-size: 30rpx;
+    color: #6f7676;
+    border-bottom: solid 1px #ebebf0;
+    display: flex;
+  }
+  .theme-item-data{
+    flex: 1
+  }
+  .theme-item-status{
+    color: #000;
+  }
+  .theme-list-content{
+    padding: 25rpx;
+    display: flex;
+  }
+  .theme-item-pic{
+    width: 180rpx;
+    height: 160rpx;
+    background-color: #ebebf1;
+  }
+  .pic{
+    width: 100%;
+    height: 100%;
+  }
+  .theme-item-detail{
+    margin-left: 25rpx;
+    flex: 2;
+  }
+  .detail-title{
+    max-height: 80rpx;
+    padding: 15rpx 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 32rpx;
+  }
+  .detail-dec{
+    font-size: 26rpx;
+    color: #83838f;
+    padding: 15rpx 0;
+  }
+  .detail-more{
+    padding: 15rpx 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .detail-more .avatar{
+    height: 60rpx;
+    width: 60rpx;
+    border-radius: 50%;
+    background-color: #c3c3c8;
+    margin-right: 15rpx;
+  }
+  .text-sub{
+    color: #83838f;
+  }
+  .text-success{
+    color: #1AAD19;
+  }
+  .text-error{
+    color: #E01234;
+  }
+</style>
+<template>
+  <view class="container">
+    <view class="status-box">
+      <view wx:for-items='{{statusType}}' data-index='{{index}}' wx:key='{{index}}' class="status-label {{index == status ? 'active' : ''}}" @tap='checkStatus'>{{item}}</view>
+    </view>
+    <view class="theme-list">
+      <block wx:for='{{themeList}}' wx:key='{{index}}'>
+        <navigator url='themeList?themeId={{item.id}}' class="theme-item">
+          <view class="theme-item-top">
+            <view class="theme-item-data">
+              {{item.createTime}}
+            </view>
+            <view class="theme-item-status" class="{{item.statusClass}}" >
+              {{item.statusType}}
+            </view>
+          </view>
+          <view class="theme-list-content">
+            <view class="theme-item-pic">
+                <image src="{{item.defaultImg}}" alt="" class="pic" mode="aspectFit"></image>
+            </view>
+            <view class="theme-item-detail">
+              <view class="detail-title">
+                {{item.title}}
+              </view>
+              <view class="detail-dec">
+                {{item.description}}
+              </view>
+              <view class="detail-more" wx:if='{{item.userImg.length}}'>
+                <view class="user-info">
+                  <block wx:for='{{item.userImg}}' wx:key='{{index}}' >
+                    <image class="avatar" src='{{item}}' wx:if='{{index < 3}}'></image>
+                  </block>
+                </view>
+                <text class="text-sub">{{item.userCount}}名用户已参与主题...</text>
+              </view>
+            </view>
+          </view>
+        </navigator>
+      </block>
+      <loading :loadingType.sync='loadingType' />
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy';
+  import loading from '../components/loading';
+  import {formatDate} from '../common/date';
+  export default class myTheme extends wepy.page {
+    config = {
+      navigationBarTitleText: '主题列表'
+    };
+    data = {
+      loadingType: 1,
+      statusType: {
+        1: '新建主题',
+        2: '参与主题'
+      },
+      themeList: [],
+      loading: {
+        pic: '',
+        text: ''
+      },
+      status: 1,
+      pageNo: 1,
+      pageSize: 6,
+      isOver: 0
+    };
+    components = {
+      loading
+    };
+    methods = {
+      checkStatus(event) {
+        this.status = event.currentTarget.dataset.index;
+        this.customOnLoad();
+      }
+    };
+    onReachBottom() {
+      this.getData();
+    }
+    getData() {
+      let me = this;
+      if (me.isOver) {
+        me.loadingType = 3;
+        me.$apply();
+        return;
+      }
+      wepy.request({
+        url: `${this.$parent.APIServer}/guide/theme/list`,
+        method: 'POST',
+        header: {
+          'accessToken': this.$parent.globalData.accessToken
+        },
+        data: {
+          type: me.status,
+          userId: this.$parent.globalData.userid,
+          page: {
+            pageNo: me.pageNo,
+            pageSize: me.pageSize
+          }
+        },
+        success: function(res) {
+          me.loadingType = 0;
+          let data = res.data.data.list;
+          me.pageNo += 1;
+          if (data.length) {
+            if (data.length < me.pageSize) {
+              me.isOver = 1;
+              me.loadingType = 3;
+            }
+            data.forEach(function(item, index) {
+              if (item.id) {
+                  let obj = {};
+                  obj.id = item.id;
+                  obj.title = item.title;
+                  obj.description = item.description;
+                  obj.createTime = formatDate(item.createTime, 'Y-m-d H:i:s');
+                  obj.defaultImg = item.defaultImg ? JSON.parse(item.defaultImg).filePaths[0] : 'http://upload.ouliu.net/i/201712291020422f2wp.jpeg';
+                  obj.userImg = item.userList;
+                  obj.userCount = obj.userImg.length;
+                  obj.status = item.status;
+                  if (item.status === 1) {
+                    obj.statusType = '未满';
+                    obj.statusClass = 'text-success';
+                  } else if (item.status === 2) {
+                    obj.statusType = '已满';
+                    obj.statusClass = 'text-error';
+                  }
+                  me.themeList.push(obj);
+                }
+            });
+          } else {
+            me.loadingType = 2;
+          }
+          me.$apply();
+        }
+      });
+    };
+    customOnLoad() {
+      let me = this;
+      me.themeList = [];
+      me.pageNo = 1;
+      me.isOver = 0;
+      me.loadingType = 1;
+      me.getData();
+    };
+    onLoad() {
+      this.customOnLoad();
+    };
+  }
+</script>

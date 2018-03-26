@@ -1,0 +1,134 @@
+<style>
+  .pickerBtn {
+    position: absolute;
+    z-index: 100;
+    width: 100%;
+    background: #fff;
+    display: flex;
+    font-size: 40rpx;
+    color: #44b549;
+  }
+  .btnItem1 {
+    text-align: left;
+    flex: 1;
+    padding: 20rpx;
+  }
+  .btnItem2 {
+    text-align: right;
+    flex: 1;
+    padding: 20rpx;
+  }
+  .upMask {
+    position: fixed;
+    z-index: 1000;
+    width: 100%;
+    bottom: 0;
+    background: #fff;
+  }
+  .pickerColumn {
+    line-height: 50px;
+    text-align: center;
+    font-size: 35rpx;
+  }
+  .mask {
+    background: #000;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 999;
+    opacity: 0.7;
+  }
+</style>
+<template>
+  <view class="upMask" wx:if="{{isShow}}">
+    <picker-view indicator-style="height: 50px;" style="width: 100%; height: 300px; color:#000" bindchange="change">
+      <view class="pickerBtn">
+        <view class="btnItem1" @tap="closeMask">取消</view>
+        <view class="btnItem2" @tap="ensure">确定</view>
+      </view>
+      <picker-view-column>
+        <view wx:for="{{firstColumns}}" wx:key="{{index}}" style="padding-left: 20px;" class="pickerColumn">{{item}}</view>
+      </picker-view-column>
+      <picker-view-column>
+        <view wx:for="{{currentTwoColumns}}" wx:key="{{index}}" style="padding-left: 20px;" class="pickerColumn">{{item}}</view>
+      </picker-view-column>
+    </picker-view>
+  </view>
+  <view class="mask" wx:if="{{isShow}}" @tap="closeMask"></view>
+</template>
+<script>
+  import wepy from 'wepy';
+  import tool from '../common/tool';
+  export default class choiceColumn extends wepy.component {
+    data = {
+      componentName: '', // 组件名称
+      isShow: 0, // 组件显示隐藏
+      // 显示栏目数据
+      firstColumns: [],
+      currentTwoColumns: [],
+      // 选择后的栏目
+      firstColumn: '',
+      twoColumn: ''
+    };
+    methods = {
+      change (e) {
+        const val = e.detail.value;
+        this.firstColumn = this.firstColumns[val[0]];
+        let currentTwoColumnsArray = [];
+        for (let i = 0; i < tool.query(this.$parent.$parent.globalData.column, this.firstColumn, 'name', 'children').length; i++) {
+          currentTwoColumnsArray.push(tool.query(this.$parent.$parent.globalData.column, this.firstColumn, 'name', 'children')[i].name);
+        }
+        this.currentTwoColumns = currentTwoColumnsArray;
+        this.twoColumn = this.currentTwoColumns[val[1]];
+      },
+      closeMask() {
+        this.isShow = 0;
+      },
+      ensure() {
+        this.isShow = 0;
+        let value = [this.firstColumn, this.twoColumn, this.componentName];
+        this.$emit('ensure', value);
+      }
+    };
+    setShowColumn(type) {
+      this.isShow = 1;
+      this.componentName = type;
+      this.firstColumn = this.firstColumns[0];
+      this.twoColumn = this.currentTwoColumns[0];
+      this.$apply();
+    };
+    watch = {
+      isShow (newValue, oldValue) {
+        this.$emit('isShow', newValue);
+      }
+    };
+    onLoad() {
+      let me = this;
+      wepy.request({
+        url: `${me.$parent.$parent.APIServer}/guide/category/2`,
+        header: {
+          'accessToken': me.$parent.$parent.globalData.accessToken
+        },
+        success: function (data) {
+          let result = data.data.data;
+          if (result) {
+            me.$parent.$parent.globalData.column = result;
+            for (let i = 0; i < me.$parent.$parent.globalData.column.length; i++) {
+              me.firstColumns.push(me.$parent.$parent.globalData.column[i].name);
+            }
+            let currentTwoColumnsArray = [];
+            for (let i = 0; i < me.$parent.$parent.globalData.column[0].children.length; i++) {
+              currentTwoColumnsArray.push(me.$parent.$parent.globalData.column[0].children[i].name);
+            }
+            me.currentTwoColumns = currentTwoColumnsArray;
+          }
+          me.$apply();
+        }
+      });
+    }
+  }
+</script>

@@ -1,0 +1,160 @@
+<style>
+  page{
+    background: #ededed;
+  }
+  .box {
+    margin: 25rpx;
+    background: #fff;
+  }
+  .box1{
+    display: flex;
+    padding: 55rpx;
+    font-size: 35rpx;
+    font-weight: 500;
+    font-family: '黑体';
+    background: #fbfbfb;
+  }
+  .box11{
+    padding-right: 40rpx;
+  }
+  .box12{
+    flex: 1;
+    color: #596d96;
+  }
+  .box2{
+    padding: 55rpx;
+
+  }
+  .box21{
+    font-size: 35rpx;
+    font-weight: 500;
+    font-family: '黑体';
+    padding-bottom: 35rpx;
+
+  }
+  .box22{
+    display: flex;
+    border-bottom:1px solid #e2e2e2 ;
+  }
+  .box221{
+    font-size: 40rpx;
+    padding-right: 25rpx;
+  }
+  .box222{
+    height: 80rpx;
+    font-size: 50rpx;
+    font-weight:bold;
+  }
+  .box3{
+    font-size: 30rpx;
+    padding: 25rpx 0;
+    color: #999999;
+  }
+  .box31{
+    color: #576b95;
+  }
+  .box4{
+    padding-top: 35rpx;
+  }
+  .box5{
+    padding: 30rpx 0;
+    text-align: center;
+    color: #b5b5b5;
+  }
+
+</style>
+
+<template>
+  <view class="box">
+    <view class="box1" @tap="selectionCard()">
+      <view class="box11">到账银行卡</view>
+      <view class="box12">{{currentBank.bank}}({{currentBank.bankCard}})</view>
+    </view>
+    <view class="box2">
+      <view class="box21">提现金额</view>
+      <view class="box22">
+        <view class="box221">¥</view>
+        <input class="box222" type="number" value="{{amount}}" @input="changeValue('amount')"/>
+      </view>
+      <view class="box3">
+        当前零钱余额{{yue}}元，<span class="box31" @tap="all()">全部提现</span>
+      </view>
+      <view class="box4">
+        <view class="btns">
+          <button type="primary" @tap="withdrawals()" disabled="{{amount ? 0 : 1}}"> 审请提现 </button>
+        </view>
+      </view>
+      <view class="box5">
+        3个工作日内到账
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '零钱提现'
+    };
+    data = {
+      yue: '',
+      amount: '',
+      currentBank: ''
+    };
+    methods = {
+      all() {
+        this.amount = this.yue;
+        this.$apply();
+      },
+      changeValue(val, e) {
+        this[val] = e.detail.value.replace(/\s+/g, '');
+        this.$apply();
+      },
+      withdrawals() {
+        if (this.amount > this.yue) {
+          wepy.showToast({title: '余额不足', image: '../assets/img/toast-icon.png', mask: 1, duration: 1000});
+          return false;
+        }
+        let me = this;
+        wepy.request({
+          url: `${this.$parent.APIServer}/guide/encash`,
+          method: 'POST',
+          header: {
+            'accessToken': this.$parent.globalData.accessToken
+          },
+          data: {
+            amount: me.amount,
+            userBankId: me.currentBank.id
+          },
+          success(data) {
+            let result = data.data.data;
+            if (result) {
+              wepy.showToast({title: '审请提现成功', mask: 1, duration: 2000});
+              setTimeout(function () {
+                wepy.navigateTo({
+                  url: `cashRegister`
+                });
+              }, 2000);
+            }
+          }
+        });
+      },
+      applicationRecord() {
+        wepy.navigateTo({
+          url: `bindBankCard`
+        });
+      },
+      selectionCard() {
+        wepy.navigateBack({
+          url: `optionBank`
+        });
+      }
+    };
+    onLoad() {
+      let me = this;
+      me.yue = me.$parent.globalData.yue;
+      me.currentBank = me.$parent.globalData.currentBank;
+    }
+  }
+</script>

@@ -1,0 +1,54 @@
+<style>
+  .Atitle {
+    font-weight: 700;
+    font-size: 42rpx;
+    text-align: center;
+    padding: 50rpx 0 10rpx 0;
+  }
+    .content {
+    color: #7b7b7b;
+    padding: 30rpx;
+    line-height: 1.8;
+  }
+   .subTitle {
+    font-weight: 700;
+    font-size: 32rpx;
+    color: #000;
+  }
+  .indent{
+    text-indent:2em;
+  }
+</style>
+
+<template>
+  <view class="Atitle">提现与退款</view>
+  <view class="content">
+    <view class="subTitle">一、提现方式</view>
+    <view class="indent">
+      点击个人中心的资金提现按钮即可看到可提现的具体金额，确认后资金将在3个工作日内自动打到提供资金账户。
+    </view>
+    <view class="indent">
+        提现小于10元，30个工作日内自动打到提供的资金账户。
+    </view>
+    <view class="indent">
+        微信支付提现时需要收取手续费及管理费共1.5%，王牌推手将在提现时扣除，记录在个人中心查看。
+    </view>
+    <view class="subTitle">二、退款规则</view>
+    <view class="indent">
+      10日内退款不收手续费。将在3个工作日内自动打到提供资金账户。
+    </view>
+    <view class="subTitle">三、提现规则</view>
+    <view class="indent">
+      单个商家或个人，单笔单日限额2万；提现前微信账号需要开通钱包实名认证功能，否则无法提现到账。
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '推手'
+    };
+  }
+</script>

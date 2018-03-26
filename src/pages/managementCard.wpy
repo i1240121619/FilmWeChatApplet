@@ -1,0 +1,106 @@
+<style>
+  page{
+    background: #ededed;
+  }
+  .box2{
+    background: #fff;
+    display: flex;
+    padding:35rpx;
+    padding-top: 0;
+    padding-bottom: 0;
+    font-size: 35rpx;
+    align-items: center;
+    border-bottom: 1px solid #d9d9d9;
+  }
+  .box21{
+    height: 100rpx;
+    line-height: 100rpx;
+    flex: 1;
+  }
+  .add::before {
+    color: #1aad19;
+    font-weight: bold;
+    font-family:"iconfont" !important;
+    content: "\e6b9";
+  }
+  .del::before {
+    color: red;
+    font-size: 30rpx;
+    font-family:"iconfont" !important;
+    content: "\e69a";
+  }
+
+</style>
+
+<template>
+
+  <view class="box2" wx:for="{{bankList}}" wx:key="{{index}}">
+    <view class="box21">
+      {{item.bank}}({{item.bankCard}})
+    </view>
+    <view class="box22 del" @tap="del({{item.id}},{{index}})"></view>
+  </view>
+
+  <view class="box2" @tap="addCord()">
+    <view class="box21 add">
+      添加新银行卡
+    </view>
+    <view class="box22"></view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '我的银行卡'
+    };
+    data = {
+      bankList: []
+    };
+    methods = {
+      del(id, index) {
+        let me = this;
+        wepy.request({
+          url: `${this.$parent.APIServer}/guide/bank/${id}`,
+          method: 'DELETE',
+          header: {
+            'accessToken': this.$parent.globalData.accessToken
+          },
+          success(data) {
+            let result = data.data.data;
+            if (result) {
+              me.bankList.splice(index, 1);
+              me.$apply();
+            }
+          }
+        });
+      },
+      addCord() {
+        wepy.navigateTo({
+          url: `bindBankCard`
+        });
+      }
+    };
+    getData() {
+      let me = this;
+      wepy.request({
+        url: `${this.$parent.APIServer}/guide/bank/list`,
+        method: 'GET',
+        header: {
+          'accessToken': this.$parent.globalData.accessToken
+        },
+        success(data) {
+          let result = data.data.data;
+          if (result) {
+            me.bankList = result;
+            me.$apply();
+          }
+        }
+      });
+    };
+    onShow() {
+      this.getData();
+    }
+  }
+</script>

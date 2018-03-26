@@ -1,0 +1,108 @@
+<style>
+  page{
+    background: #ededed;
+  }
+  .box1{
+    padding: 30rpx 30rpx 15rpx 30rpx;
+    color: #888888;
+    font-weight: 500;
+    font-family: '黑体';
+    font-size: 30rpx;
+  }
+  .box2{
+    background: #fff;
+    display: flex;
+    padding:35rpx;
+    padding-top: 0;
+    padding-bottom: 0;
+    font-size: 35rpx;
+    align-items: center;
+    border-bottom: 1px solid #d9d9d9;
+  }
+  .box21{
+    height: 100rpx;
+    line-height: 100rpx;
+    flex: 1;
+  }
+  .box22.active::before {
+    color: #1aad19;
+    font-size: 60rpx;
+    font-family:"iconfont" !important;
+    content: "\e6ad";
+  }
+  .add::before {
+    color: #1aad19;
+    font-weight: bold;
+    font-family:"iconfont" !important;
+    content: "\e6b9";
+  }
+
+</style>
+
+<template>
+  <view class="box1">
+    选择到账银行
+  </view>
+
+  <view class="box2" wx:for="{{bankList}}" wx:key="{{index}}" @tap="currentBankFun({{item}})">
+    <view class="box21">
+      {{item.bank}}({{item.bankCard}})
+    </view>
+    <view class="box22"></view>
+  </view>
+
+  <view class="box2" @tap="addCord()">
+    <view class="box21 add">
+      添加银行卡提现
+    </view>
+    <view class="box22"></view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '选择银行卡'
+    };
+    data = {
+      currentBank: '',
+      amount: '',
+      bankList: []
+    };
+    methods = {
+      currentBankFun(currentBank) {
+        this.currentBank = currentBank;
+        this.$parent.globalData.currentBank = this.currentBank;
+        wepy.navigateTo({
+          url: `cashWithdrawal`
+        });
+      },
+      addCord() {
+        wepy.navigateTo({
+          url: `bindBankCard`
+        });
+      }
+    };
+    getData() {
+      let me = this;
+      wepy.request({
+        url: `${this.$parent.APIServer}/guide/bank/list`,
+        method: 'GET',
+        header: {
+          'accessToken': this.$parent.globalData.accessToken
+        },
+        success(data) {
+          let result = data.data.data;
+          if (result) {
+            me.bankList = result;
+            me.$apply();
+          }
+        }
+      });
+    };
+    onShow() {
+      this.getData();
+    }
+  }
+</script>

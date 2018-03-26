@@ -1,0 +1,144 @@
+<style>
+  .pickerBtn {
+    position: absolute;
+    z-index: 100;
+    width: 100%;
+    background: #fff;
+    display: flex;
+    font-size: 40rpx;
+    color: #44b549;
+  }
+  .btnItem1 {
+    text-align: left;
+    flex: 1;
+    padding: 20rpx;
+  }
+  .btnItem2 {
+    text-align: right;
+    flex: 1;
+    padding: 20rpx;
+  }
+  .upMask {
+    position: fixed;
+    z-index: 1000;
+    width: 100%;
+    bottom: 0;
+    background: #fff;
+  }
+  .pickerColumn {
+    line-height: 50px;
+    text-align: center;
+    font-size: 35rpx;
+  }
+  .mask {
+    background: #000;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 999;
+    opacity: 0.7;
+  }
+</style>
+<template>
+  <view class="upMask" wx:if="{{showDateTime}}">
+    <picker-view indicator-style="height: 50px;" style="width: 100%; height: 300px; color:#000" value="{{value}}" bindchange="dateTimeChange">
+      <view class="pickerBtn">
+        <view class="btnItem1" @tap="closeMask">取消</view>
+        <view class="btnItem2" @tap="ensureTime">确定</view>
+      </view>
+      <picker-view-column>
+        <view wx:for="{{years}}" wx:key="{{index}}" style="padding-left: 20px;" class="pickerColumn">{{item}}年</view>
+      </picker-view-column>
+      <picker-view-column>
+        <view wx:for="{{months}}" wx:key="{{index}}" style="lpadding-left: 15px;" class="pickerColumn">{{item}}月</view>
+      </picker-view-column>
+      <picker-view-column>
+        <view wx:for="{{days}}" wx:key="{{index}}" class="pickerColumn">{{item}}日</view>
+      </picker-view-column>
+      <picker-view-column>
+        <view wx:for="{{hours}}" wx:key="{{index}}" class="pickerColumn">{{item}}点</view>
+      </picker-view-column>
+      <picker-view-column>
+        <view wx:for="{{minutes}}" wx:key="{{index}}" class="pickerColumn">{{item}}分</view>
+      </picker-view-column>
+    </picker-view>
+  </view>
+  <view class="mask" wx:if="{{showDateTime}}" @tap="closeMask"></view>
+</template>
+<script>
+  import wepy from 'wepy';
+  const date = new Date();
+  const years = [];
+  const months = [];
+  const days = [];
+  const hours = [];
+  const minutes = [];
+  for (let i = 2016; i <= date.getFullYear(); i++) {
+    years.push(i);
+  };
+  for (let i = 1; i <= 12; i++) {
+    months.push(i);
+  };
+  for (let i = 1; i <= 31; i++) {
+    days.push(i);
+  };
+  for (let i = 1; i <= 24; i++) {
+    hours.push(i);
+  };
+  for (let i = 1; i <= 60; i++) {
+    minutes.push(i);
+  };
+  export default class choiceTime extends wepy.component {
+    data = {
+      timeType: '', // 时间组件类型
+      showDateTime: 0, // 时间组件显示隐藏
+      // 显示日期数据
+      years: years,
+      months: months,
+      days: days,
+      hours: hours,
+      minutes: minutes,
+      // 选择后的日期
+      year: '',
+      month: '',
+      day: '',
+      hour: '',
+      minute: '',
+      value: '',
+      nowTime: ''
+    };
+    methods = {
+      dateTimeChange (e) {
+        const val = e.detail.value;
+        this.year = this.data.years[val[0]];
+        this.month = this.data.months[val[1]];
+        this.day = this.data.days[val[2]];
+        this.hour = this.data.hours[val[3]];
+        this.minute = this.data.minutes[val[4]];
+        this.value = [this.year, this.month - 1, this.day - 1, this.hour - 1, this.minute - 1];
+      },
+      closeMask() {
+        this.showDateTime = 0;
+      },
+      ensureTime() {
+        this.showDateTime = 0;
+        let value = [this.value[0], this.value[1] + 1, this.value[2] + 1, this.value[3] + 1, this.value[4] + 1, this.timeType];
+        this.$emit('ensureTime', value);
+      }
+    };
+    setShowDateTime(type) {
+      this.showDateTime = 1;
+      this.timeType = type;
+      this.$apply();
+    };
+    onLoad() {
+      this.value = [date.getFullYear(), date.getMonth(), date.getDate() - 1, date.getHours() - 1, date.getMinutes() - 1];
+      this.nowTime = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
+      this.$apply();
+    }
+  }
+</script>

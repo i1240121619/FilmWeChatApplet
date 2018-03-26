@@ -1,0 +1,274 @@
+<style>
+  .goodsList {
+    margin: 20rpx;
+  }
+  .tips {
+    color: #7b7b7b;
+    font-size: 34rpx;
+    padding: 40rpx 20rpx 20rpx 20rpx;
+  }
+  .addBtn {
+    margin: 20rpx 20rpx 150rpx 20rpx;
+  }
+  .rightico {
+    position: absolute;
+    right: 20rpx;
+    z-index: 10;
+  }
+  .certainBtn {
+    position: fixed;
+    top:20rpx;
+    right: 20rpx;
+    width: 160rpx;
+    background: #1aad19;
+    color: #fff;
+    text-align: center;
+    border-radius: 6rpx;
+    padding: 20rpx;
+    z-index: 11;
+  }
+  view{
+    box-sizing: border-box;
+  }
+  .item-box{
+    width: 700rpx;
+    margin: 0 auto;
+    padding:40rpx 0;
+  }
+  .items{
+    width: 100%;
+  }
+  .item{
+    position: relative;
+    border-top: 2rpx solid #eee;
+    height: 120rpx;
+    line-height: 120rpx;
+    overflow: hidden;
+  }
+  .item:last-child{
+    border-bottom: 2rpx solid #eee;
+  }
+  .inner{
+    position: absolute;
+    top:0;
+  }
+  .inner.txt{
+    background-color: #fff;
+    width: 100%;
+    z-index: 5;
+    padding:0 10rpx;
+    transition: left 0.2s ease-in-out;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .inner.del{
+    background-color: #e64340;
+    width: 180rpx;text-align: center;
+    z-index: 4;
+    right: 0;
+    color: #fff
+  }
+  .item-icon{
+    width: 64rpx;
+    vertical-align: middle;
+    margin-right: 16rpx
+  }
+  .thumb{
+    width: 200px;
+    height: 200px;
+    -webkit-overflow-scrolling: touch;
+    overflow: scroll;
+  }
+</style>
+
+<template>
+  <view class="certainBtn" @tap="confirmSelect" wx:if="{{proList.length > 0 && pageType === 'add'}}">确定</view>
+  <view class="tips" wx:if="{{proList.length > 0 && pageType === 'add'}}">请选择一款商品发布</view>
+  <view class="tips" wx:if="{{proList.length == 0}}">您还没有添加商品, 请先添加商品</view>
+
+  <view class='item-box'>
+    <view class='items'>
+      <view wx:for='{{proList}}' wx:key='{{index}}' class='item' @tap="selectPro({{index}})">
+        <view bindtouchstart='touchS' bindtouchmove='touchM' bindtouchend='touchE'
+              data-index='{{index}}' style='{{item.txtStyle}}' class='inner txt'>
+          <image class='item-icon' mode='widthFix' src='{{item.properties.Thumbnails}}'></image>
+          {{item.name ? item.name : '未命名'}}
+        </view>
+        <view class="rightico" wx:if="{{item.selected && pageType == 'add'}}">
+          <icon size="20" type="success_no_circle"/>
+        </view>
+        <view class="rightico" wx:if="{{!item.selected && pageType !== 'add'}}">
+          <span class="iconfont icon-more" style="font-weight: 700;color: #ABB8CB;"></span>
+        </view>
+        <view data-index='{{index}}' bindtap = 'delItem' class='inner del'>删除</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="addBtn">
+    <button type="primary" size="default" @tap="addProduct" class="OA-btn"> 添加商品 </button>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import {formatDate} from '../common/date';
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '商品列表'
+    };
+    data = {
+      selected: '',
+      proList: '',
+      pageType: '',
+      startX: '',
+      delBtnWidth: 180
+    };
+    methods = {
+      touchS(e) {
+        if (e.touches.length === 1) {
+          // 设置触摸起始点水平方向位置
+          this.startX = e.touches[0].clientX;
+          this.$apply();
+        }
+      },
+      touchM(e) {
+        if (e.touches.length === 1) {
+          // 手指移动时水平方向位置
+          var moveX = e.touches[0].clientX;
+          // 手指起始点位置与移动期间的差值
+          var disX = this.startX - moveX;
+          var delBtnWidth = this.delBtnWidth;
+          var txtStyle = '';
+          if (disX === 0 || disX < 0) { // 如果移动距离小于等于0，文本层位置不变
+            txtStyle = 'left:0px';
+          } else if (disX > 0) { // 移动距离大于0，文本层left值等于手指移动距离
+            txtStyle = 'left:-' + disX + 'px';
+            if (disX >= delBtnWidth) {
+              txtStyle = 'left:-' + delBtnWidth + 'px';
+            }
+          }
+          var index = e.target.dataset.index;
+          var list = this.proList;
+          list[index].txtStyle = txtStyle;
+          this.proList = list;
+          this.$apply();
+        }
+      },
+      touchE(e) {
+        if (e.changedTouches.length === 1) {
+          // 手指移动结束后水平位置
+          var endX = e.changedTouches[0].clientX;
+          // 触摸开始与结束，手指移动的距离
+          var disX = this.startX - endX;
+          var delBtnWidth = this.delBtnWidth;
+          // 如果距离小于删除按钮的1/2，不显示删除按钮
+          var txtStyle = disX > delBtnWidth / 2 ? 'left:-' + delBtnWidth + 'px' : 'left:0px';
+          // 获取手指触摸的是哪一项
+          var index = e.target.dataset.index;
+          var list = this.proList;
+          list[index].txtStyle = txtStyle;
+          // 更新列表的状态
+          this.proList = list;
+          this.$apply();
+        }
+      },
+      confirmSelect() {
+        let tmpObj = [];
+        this.$parent.globalData.products = null;
+        for (let i in this.proList) {
+          if (this.proList[i].selected) {
+            tmpObj.push(this.proList[i]);
+          }
+        }
+        this.$parent.globalData.products = tmpObj;
+        this.$apply();
+        wepy.navigateBack({
+          delta: 1
+        });
+      },
+      selectPro(index) {
+        if (this.pageType === 'add') {
+          if (this.proList[index].selected) {
+            this.proList[index].selected = null;
+          } else {
+            this.proList[index].selected = true;
+          }
+          this.$apply();
+        } else {
+          let productID = this.proList[index].productId;
+          wepy.navigateTo({
+            url: `productDetail?ProId=${productID}`
+          });
+        }
+      },
+      addProduct(e) {
+        wepy.navigateTo({
+          url: 'addGoods'
+        });
+      }
+    };
+    // 获取元素自适应后的实际宽度
+    getEleWidth(w) {
+      var real = 0;
+      try {
+        var res = wepy.getSystemInfoSync().windowWidth;
+        var scale = (750 / 2) / (w / 2);// 以宽度750px设计稿做宽度的自适应
+        // console.log(scale);
+        real = Math.floor(res / scale);
+        return real;
+      } catch (e) {
+        return false;
+        // Do something when catch error
+      }
+    };
+    initEleWidth() {
+      var delBtnWidth = this.getEleWidth(this.delBtnWidth);
+      this.delBtnWidth = delBtnWidth;
+      this.$apply();
+    };
+    getList() {
+      let me = this;
+      wepy.request({
+        url: `${this.$parent.APIServer}/guide/product/list/me`,
+        method: 'POST',
+        header: {
+          'accessToken': this.$parent.globalData.accessToken
+        },
+        data: {
+          page: {
+            pageNo: 0,
+            pageSize: 100
+          }
+        },
+        success: function (data) {
+          let result = data.data.data;
+          if (result) {
+            for (let i = 0; i < result.list.length; i++) {
+              result.list[i].createTime = formatDate(result.list[i].createTime, 'Y/m/d H:i');
+              result.list[i].properties = JSON.parse(result.list[i].properties);
+              result.list[i].txtStyle = '';
+              result.list[i]['selected'] = false;
+            }
+            me.proList = result.list;
+            me.$apply();
+          }
+        }
+      });
+    }
+    onShow() {
+      this.startX = '';
+      this.delBtnWidth = 180;
+      if (this.pageType) {
+        this.getList();
+      }
+    };
+    onLoad(options) {
+      this.initEleWidth();
+      this.pageType = options.pageType;
+      this.$apply();
+      this.getList();
+    }
+  }
+</script>

@@ -1,0 +1,79 @@
+<style>
+  .tab {
+    color: #7b7b7b;
+    background: #fff;
+    height: 136rpx;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    border-top: 1px solid #dad9d6;
+    font-size: 24rpx;
+    white-space: nowrap;
+    z-index: 99999;
+    display: block;
+    /*margin-top:136rpx;*/
+  }
+  .tab_item {
+    display: inline-block;
+    width: 33.3333%;
+    text-align: center;
+    padding-top: 10rpx;
+  }
+  .active {
+     color: #E01234;
+   }
+  .icon {
+    width: 60rpx;
+    height: 60rpx;
+    display: block;
+    margin: auto;
+  }
+  .title {
+    padding-top: 6rpx;
+    display: block;
+  }
+</style>
+
+<template>
+  <view class="tab">
+    <view class="tab_item {{active == 0 ? ' active' : ''}}" @tap="change(0)">
+      <span class="iconfont icon-cart" style="font-size: 60rpx;"></span>
+      <view class="title">首页</view>
+    </view>
+    <view class="tab_item {{active == 1 ? ' active' : ''}}" @tap="change(1)">
+      <span class="iconfont icon-hot" style="font-size: 60rpx;"></span>
+      <view class="title">活动</view>
+    </view>
+    <view class="tab_item {{active == 2 ? ' active' : ''}}" @tap="change(2)">
+      <span class="iconfont icon-account" style="font-size: 60rpx;"></span>
+      <view class="title">我的</view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  export default class Tab extends wepy.component {
+    data = {
+      active: 0
+    };
+    methods = {
+      change(idx) {
+        this.active = idx;
+        this.$parent.currentTab = idx;
+        this.$parent.getData(idx);
+        this.$parent.$apply();
+      }
+    };
+    onLoad() {
+      let status = wepy.getStorageSync('tabStatus');
+      if (status) {
+        this.active = status;
+      } else {
+        this.active = 0;
+      }
+      this.$apply();
+      wepy.removeStorageSync('tabStatus');
+    }
+  }
+</script>

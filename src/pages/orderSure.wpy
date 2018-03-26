@@ -1,0 +1,412 @@
+<style>
+  .cartAdr {
+    background-color: #fff;
+    padding: 30rpx;
+    position: relative;
+  }
+  .cartAdr:after {
+    content: "";
+    width: 100%;
+    height: 2px;
+    /*background-image: url(../assets/img/adrbg.png);*/
+    /*background-repeat: repeat-x;*/
+    position: absolute;
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: auto;
+    z-index: 5;
+  }
+
+  .cartAdr .t{
+    font-size: 32rpx;
+  }
+
+  .cartAdr .addrall{
+    padding: 10rpx 0;
+    display: flex;
+    align-items: center;
+  }
+  .cartAdr .addr {
+    width: 630rpx;
+    font-size: 28rpx;
+    color: #666;
+    line-height: 40rpx;
+    overflow: hidden;
+  }
+  .addrioc{
+    text-align: right;
+    padding-left: 15rpx;
+  }
+  .addrioc:after{
+    color: #666;
+    font-size: 45rpx;
+    font-family:"iconfont" !important;
+    content: "\e6a7";
+  }
+  .cartListBox {
+    background-color:#fff;
+    margin-top: .667rem;
+  }
+  .cartListBox .cartList .viewli {
+    display:flex;
+    align-items:center;
+  }
+  .cartListBox .cartList .viewli:last-of-type .goodsList:after {
+    display:none!important
+  }
+  .cartListBox .cartList .goodsList {
+    display:block;
+    flex:1;
+    display:flex;
+    align-items:center;
+    padding:15rpx 30rpx;
+    position:relative
+  }
+  .cartListBox .cartList .goodsList:after{
+    content:"";
+    width:100%;
+    height:1px;
+    background-color:#ccc;
+    position:absolute;
+    left:0;
+    bottom:0;
+    transform:scaleY(.5);
+    box-sizing:content-box
+  }
+  .cartListBox .cartList .goodsList .goodsPic {
+    display: flex;
+    align-items: center;
+    width: 140rpx;
+    height:180rpx;
+    position:relative;
+    z-index: 0;
+    border: 1px solid #e5e5e5;
+    padding:1px;
+    overflow: hidden;
+  }
+  .cartListBox .cartList .goodsList .goodsPic image {
+    box-sizing: border-box;
+    width:100%;
+  }
+  .cartListBox .cartList .goodsList .goodsText {
+    padding-left:.667rem;
+    display:block;
+    flex:1
+  }
+  .cartListBox .cartList .goodsList .goodsText .viewh2 {
+    min-height:80rpx;
+    font-size: 32rpx;
+  }
+  .cartListBox .cartList .goodsList .goodsText p {
+    display: block;
+    color:#e01234;
+    font-size: 45rpx;
+    padding-top:1rem;
+    margin-left:-.2rem
+  }
+  .cartListBox .cartList .viewli:last-of-type .goodsList{
+    border:0
+  }
+  .cartListBox .cartNumText {
+    position: absolute;
+    top: auto;
+    right: 30rpx;
+    bottom: .5rem;
+    left: auto;
+    z-index: 0;
+    font-size: .8rem;
+    color: #999;
+  }
+
+  .lineList {
+    background-color:#fff;
+    margin-top:.667rem
+  }
+  .lineList .viewli {
+    height:80rpx;
+    margin-left:30rpx;
+    padding-right:30rpx;
+    font-size:32rpx;
+    position:relative;
+    display:flex;
+    align-items:center;
+  }
+  .lineList .viewli:after {
+    content:"";
+    width:100%;
+    height:1px;
+    background-color:#ddd;
+    position:absolute;
+    left:0;
+    top:0;
+    transform:scaleY(.5);
+    box-sizing:content-box
+  }
+  .lineList .viewli p {
+    display:block;
+    flex:1
+  }
+  .lineList .red {
+    color:#e01234
+  }
+  .lineList .viewli:first-of-type:after {
+    display:none
+  }
+  .lineList .viewli .icon_wxpay {
+    font-size:1.267rem;
+    color:#00c800;
+    padding-right:.2rem;
+    position:relative;
+    top:.05rem
+  }
+  .flexMain {
+    flex: 1;
+  }
+  .lineList input {
+    border: 0;
+    font-size: 28rpx;
+  }
+  .lineList .viewli .beizhu {
+    padding-right: 8px;
+  }
+  .orderSubmit {
+    width: 100%;
+    height: 120rpx;
+    background-color:#fff;
+    font-size: 33rpx;
+    padding-left:30rpx;
+    overflow:auto;
+    position:fixed;
+    display:flex;
+    align-items:center;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    z-index: 100;
+  }
+  .orderSubmit:after {
+    content:"";
+    width:100%;
+    height:1px;
+    background-color:#ddd;
+    position:absolute;
+    left:0;
+    top:0;
+    transform:scaleY(.5);
+    box-sizing:content-box
+  }
+  .orderSubmit p {
+    color:#e01234;
+    font-size: 45rpx;
+    display:block;
+    flex:1
+  }
+  .orderSubmit .button {
+    width: 250rpx;
+    line-height: 120rpx;
+    height:100%;
+    background-color:#e01234;
+    font-size: 35rpx;
+    color:#fff;
+    box-sizing:content-box;
+    text-align: center;
+    padding-right: 30rpx;
+  }
+  .cartAdr2{
+    border: 1px solid #e01234;
+    color:#e01234;
+    width: 250rpx;
+    padding: 20rpx;
+    padding-top: 15rpx;
+    margin: 0 auto;
+    text-align: center;
+    font-size: 33rpx;
+  }
+</style>
+
+<template>
+  <view class="cartAdr" @tap="chooseAddressFun" wx:if="{{goodType === 1}}">
+    <view class="cartAdr1" wx:if="{{isDefaultAddress}}">
+      <view class="t">{{defaultAddress.name||'未知'}} {{defaultAddress.phone}}</view>
+      <view class="addrall">
+        <view class="addr">收货地址：{{defaultAddress.province}}{{defaultAddress.city}}{{defaultAddress.address}}</view>
+        <view class="addrioc"></view>
+      </view>
+    </view>
+    <view class="cartAdr2" wx:else>
+      <span class="cartAdr2-1">+ </span>
+      <span class="cartAdr2-2"> 选择收货地址</span>
+    </view>
+  </view>
+  <view class="cartListBox">
+    <view class="cartList">
+      <view class="viewli" wx:for='{{list}}' wx:key='{{index}}'>
+        <view class="goodsList">
+          <view class="goodsPic"><image src="{{item.Thumbnails}}" mode="widthFix"></image></view>
+          <view class="goodsText">
+            <view class="viewh2">{{item.name}}</view>
+            <p>￥{{item.salePrice}}</p>
+          </view>
+          <view class="cartNumText">×{{item.quantity}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+  <view class="lineList">
+    <view class="viewli">
+      <p>商品金额</p>
+      <span>¥{{price}}</span>
+    </view>
+    <view class="viewli">
+      <p>应付</p>
+      <span class="red">¥{{payable}}</span>
+    </view>
+  </view>
+
+  <view class="lineList">
+    <view class="viewli">
+      <span class="beizhu">订单备注</span>
+      <input type="text" class="flexMain paddingLeft fullHeight" placeholder="（30字以内）" maxlength="30" @input="remarkFun"/>
+    </view>
+  </view>
+
+  <view class="orderSubmit">
+    <span>应付：</span>
+    <p>¥{{payable}}</p>
+    <view class="button" @tap="payment()">付款</view>
+  </view>
+  <pay />
+  <alert/>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import pay from '../components/pay';
+  import alert from '../components/alert';
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '确认订单'
+    };
+    data = {
+      list: '',
+      activityId: '',
+      categoryId: '',
+      tuanId: '',
+      orderId: '',
+      goodType: '',
+      price: 0,
+      payable: 0,
+      remark: '',
+      currentTime: '',
+      defaultAddress: '',
+      isDefaultAddress: 0,
+      APIServer: '',
+      accessToken: '',
+      type: '',
+      sTxt: '支付成功!',
+      fTxt: '支付失败!'
+    };
+    components = {
+      pay,
+      alert
+    };
+    methods = {
+      remarkFun(e) {
+        this.remark = e.detail.value;
+      },
+      payment() {
+        let me = this;
+        if (!me.isDefaultAddress && me.goodType === 1) {
+          me.$invoke('alert', 'alertFun', '请选择收货地址');
+          return;
+        };
+        let address = {
+          province: me.defaultAddress.province,
+          city: me.defaultAddress.city,
+          address: me.defaultAddress.address,
+          name: me.defaultAddress.name,
+          phone: me.defaultAddress.phone
+        };
+        let data = {
+          remark: me.remark,
+          address: (JSON.stringify(address)) || ''
+        };
+        wepy.request({
+          url: `${me.$parent.APIServer}/guide/order/${me.orderId}`,
+          method: 'PUT',
+          header: {
+            'accessToken': me.$parent.globalData.accessToken
+          },
+          data: data,
+          success(data) {
+            let result = data.data;
+            if (result.stat === 406) {
+              me.$invoke('alert', 'alertFun', data.data.error);
+            } else {
+              let data = {
+                orderId: me.orderId,
+                categoryId: me.categoryId,
+                activityId: me.activityId,
+                tuanId: me.tuanId,
+                APIServer: me.APIServer,
+                accessToken: me.accessToken,
+                type: me.type,
+                sTxt: me.sTxt,
+                fTxt: me.fTxt
+              };
+              me.$invoke('pay', 'goPay', JSON.stringify(data));
+              wepy.showToast({
+                title: `等待支付！`,
+                mask: 1,
+                icon: 'loading',
+                duration: 2000
+              });
+            }
+          }
+        });
+      },
+      chooseAddressFun() {
+        let me = this;
+        wepy.chooseAddress({
+          success: function (res) {
+            me.isDefaultAddress = 1;
+            me.defaultAddress = {
+              name: res.userName,
+              phone: res.telNumber,
+              province: res.provinceName,
+              city: res.cityName,
+              address: res.detailInfo
+            };
+            me.$apply();
+          }
+        });
+      }
+    };
+    computed = {
+      allPrice() {
+        if (!this.list) return;
+        var price = 0;
+        this.list.forEach(function(itme, index) {
+            price += itme.salePrice * itme.quantity;
+        });
+        this.price = price.toFixed(2);
+      },
+      payableFun() {
+        if (!this.list) return;
+        this.payable = this.price;
+      }
+    };
+    onLoad() {
+      this.list = this.$parent.globalData.orders.dataArr;
+      this.goodType = this.$parent.globalData.orders.goodType;
+      this.type = this.$parent.globalData.orders.type;
+      this.activityId = this.$parent.globalData.orders.activityId;
+      this.categoryId = this.$parent.globalData.orders.categoryId;
+      this.orderId = this.$parent.globalData.orders.orderId;
+      this.tuanId = this.$parent.globalData.orders.tuanId;
+      this.APIServer = this.$parent.APIServer;
+      this.accessToken = this.$parent.globalData.accessToken;
+    }
+  }
+</script>

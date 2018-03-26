@@ -1,0 +1,55 @@
+<style>
+.hint-box{
+background:#c5dff6;
+}
+.hint{
+  width:96%;
+  margin:0 auto;
+  display:flex;
+  line-height:60rpx;
+  font-size:30rpx;
+  color:#8b969a;
+
+}
+.hint-titl{
+  flex:9;
+}
+.hint-show{
+  flex:1;
+  text-align:center;
+}
+.ico:after{
+  color: #666;
+  font-size: 50rpx;
+  font-family:"ts-iconfont" !important;
+}
+.del:after{
+  content: "\e624";
+  font-size:24rpx;
+}
+</style>
+
+<template>
+ <view class="{{isShow ? 'hint-box show' : 'hint-box hide'}}">
+   <view class="hint">
+    <view class="hint-titl">
+      数据以正式发布为准，仅供预览！
+    </view>
+    <view class="hint-show ico del" @tap="del"></view>
+  </view>
+ </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  export default class hint extends wepy.component {
+    data = {
+      isShow: 1
+    };
+    methods = {
+      del() {
+        this.isShow = !this.isShow;
+      }
+    };
+  }
+</script>

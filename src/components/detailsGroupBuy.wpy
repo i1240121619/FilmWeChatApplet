@@ -1,0 +1,657 @@
+<style>
+  .groupBuy_content {
+    /*padding: 20rpx;*/
+    width: 100%;
+    background: #fff;
+    border-top: 1rpx solid #fbfbfb;
+  }
+  .groupBuy_content2 {
+    margin: 20rpx 0;
+    width: 100%;
+    background: #fff;
+  }
+  .groupBuy_content2 .title {
+    padding: 24rpx;
+  }
+  .groupBuy_content .name {
+    font-size: 30rpx;
+    padding: 20rpx;
+    padding-bottom: 0;
+
+  }
+  .groupBuy_content .description {
+    color: #7b7b7b;
+    font-size: 26rpx;
+    padding: 0 40rpx 20rpx 20rpx;
+  }
+  .priceallall{
+    padding:20rpx;
+    padding-top: 0;
+    display: flex;
+  }
+  .priceli{
+    flex: 1;
+  }
+  .priceallall .fx{
+    width: 75rpx;
+    height: 75rpx;
+    padding: 0;
+    background: none;
+    overflow: inherit;
+    line-height: inherit;
+    margin-left: 20rpx;
+  }
+  .priceallall .fx::after{
+    border: none;
+  }
+  .priceallall .fx image{
+    width: 100%;
+    height: 100%;
+  }
+  .priceallall .fxtxt{
+    font-size:30rpx;
+    text-align: center;
+    color: #7b7b7b;
+  }
+  .groupBuy_content .price {
+    font-size: 30rpx;
+    color: orangered;
+    display: flex;
+    align-items: baseline;
+  }
+  .groupBuy_content .price1{
+    margin-top: 0rpx;
+  }
+  .groupBuy_content .price2{
+    margin-top: 10rpx;
+  }
+  .groupBuy_content .price .current{
+    text-align: left;
+    flex: 1;
+  }
+  .groupBuy_content .price .current .text1 {
+    font-size: 30rpx;
+    color: #7b7b7b;
+  }
+  .groupBuy_content .price .current .text2 {
+    font-size: 52rpx;
+    color: #E01234;
+    font-weight: bold;
+  }
+  .groupBuy_content .price .reduce{
+     text-align: right;
+   }
+  .groupBuy_content .price .reduce .text1{
+    font-size: 30rpx;
+    color: #E01234;
+  }
+  .groupBuy_content .price .reduce .text2{
+    font-size: 50rpx;
+    color: #E01234;
+    font-weight: bold;
+  }
+  .groupBuy_content2 .title .text1 {
+    color: #7b7b7b;
+    color: 36rpx;
+    font-weight: 700;
+  }
+  .groupBuy_content2 .title .text2 {
+    color: #000;
+    font-size: 30rpx;
+    font-weight: 700;
+  }
+  .text3{
+    text-decoration:line-through;
+    margin-left: 10rpx;
+    color: #7b7b7b;
+
+  }
+  .groupBuy_content .price .reduce .text4{
+    color: #7b7b7b;
+  }
+  .zw{
+    width: 100%;
+    height: 120rpx;
+  }
+
+  .groupBuy-content3{
+    background: #fff;
+    padding: 0rpx 20rpx;
+  }
+
+  .groupBuy-content3-1{
+    display: flex;
+    height: 100%;
+    align-items: center;
+    height: 80rpx;
+  }
+  .groupBuy-content3-1-1{
+    color: #000;
+    font-size: 32rpx;
+  }
+  .groupBuy-content3-1-2{
+    font-size: 28rpx;
+    color: #7b7b7b;
+  }
+  .groupBuy-content3-1-2::after{
+    content:"\e6a7";
+  }
+
+  ._groupBuy-content3-1{
+    flex: 1;
+  }
+
+  .footer{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: 120rpx;
+    width: 100%;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .footer-li{
+    flex: 1;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-right: 1px solid #eeeeee;
+    border-top: 1px solid #eeeeee;
+  }
+  .footer .ddgm{
+    color: #fff;
+    background: #fe939d;
+    flex: 1;
+    font-size: 32rpx;
+    border-right:none;
+    border-top:none;
+  }
+  .footer .yjkt{
+    color: #fff;
+    background: #E01234;
+    flex: 1;
+    font-size: 32rpx;
+    border-right:none;
+    border-top:none;
+  }
+  .footer .ico:after{
+    color: #666;
+    font-size: 50rpx;
+    font-family:"ts-iconfont" !important;
+  }
+  .footer .txt{
+    margin-top: 10rpx;
+  }
+  .footer .home:after{
+    content: "\e62e";
+  }
+  .footer .sc:after{
+    content: "\e643";
+  }
+  .footer .kf:after{
+    color: #E01234;
+    content: "\e634";
+  }
+
+  .groupBuy-content3-2{
+    border-top:1px solid #f3f3f3;
+    display: flex;
+    height: 120rpx;
+    align-items: center;
+  }
+  .groupBuy-content3-2-1{
+    display: flex;
+    align-items: center;
+    flex: 1;
+  }
+  .groupBuy-content3-2-2{
+    color: #E01234;
+    border:1px solid #E01234;
+    border-radius:3px;
+    padding: 8rpx 18rpx;
+    text-align: center;
+  }
+  .groupBuy-content3-2-1-1{
+    width: 80rpx;
+    height: 80rpx;
+    margin-right: 20rpx;
+  }
+  .groupBuy-content3-2-1-1 image{
+    width: 100%;
+    height: 100%;
+    border-radius:50%;
+  }
+  .groupBuy-content3-2-1-2-1{
+    font-size: 30rpx;
+  }
+  .groupBuy-content3-2-1-2-2{
+    font-size: 24rpx;
+    margin-top: 8rpx;
+  }
+  .groupBuy-content3 .description{
+    color: #7b7b7b;
+    padding: 20rpx;
+    background: #fafafa;
+    margin-top: 20rpx;
+  }
+  .groupBuy-content3-1.line{
+    border-bottom:1px solid #f3f3f3;
+  }
+  .moregroup{
+    background: rgba(0,0,0,.5);
+    width:100%;
+    height:100%;
+    position: fixed;
+    z-index:10;
+    top:0;
+  }
+  .moregroup .moregroup-box{
+    width:80%;
+    margin:0 auto;
+    margin-top:100rpx;
+    border-radius:10rpx;
+    background:#fff;
+    padding:0 20rpx;
+  }
+  .moregroup .moregroup-box .title{
+    position:relative;
+    text-align:center;
+    line-height:80rpx;
+    color:black;
+    font-size:30rpx;
+    font-weight:900;
+  }
+  .moregroup .moregroup-box .title .hidemore{
+    position:absolute;
+    right:-40rpx;
+    top:-30rpx;
+    width:60rpx;
+    height:60rpx;
+    border-radius:50%;
+    font-size:30rpx;
+    line-height:60rpx;
+    background:#e0e0e0;
+    color:#b4b4b4;
+    font-weight:900;
+  }
+  .moregroup .moregroup-box .moregroup-footer{
+    text-align:center;
+    line-height:50rpx;
+    font-size:24rpx;
+    color:#646567;
+    border-top:2rpx solid #f2f2f2;
+  }
+  .ico:after{
+    color: #666;
+    font-size: 50rpx;
+    font-family:"ts-iconfont" !important;
+  }
+  .del:after{
+    content: "\e624";
+    font-size:24rpx;
+  }
+</style>
+
+<template>
+  <banner />
+  <view class="groupBuy_content">
+    <view class="name">{{name}}</view>
+    <view class="priceallall">
+      <view class="priceli priceall">
+        <view class="price price1">
+          <view class="current">
+            <text class='text2'>￥{{floorPrice}}</text><span class="text3">￥{{salePrice}}</span>
+          </view>
+          <!--<view class="reduce">-->
+            <!--<text class='text1'>已被抢2000件</text>-->
+          <!--</view>-->
+        </view>
+        <view class="price price2">
+          <view class="current">
+            <text class='text1'>累计已卖{{extra.quantity}}件 · {{groupBuying}}人团 · 还剩{{quantity}}件</text>
+          </view>
+          <!--<view class="reduce">-->
+            <!--<text class='text4'>限量{{quantity}}件</text>-->
+          <!--</view>-->
+        </view>
+      </view>
+      <button class="fx" wx:if="{{status == 1}}"><image src="../assets/img/fx.png"></image><view class="fxtxt">分享</view></button>
+      <button class="fx" open-type="share" wx:else><image src="../assets/img/fx.png"></image><view class="fxtxt">分享</view></button>
+    </view>
+  </view>
+  <view class="groupBuy_content2">
+    <view class="title">
+        <span class="iconfont icon-clock" style="font-weight: 700;color: #7b7b7b;"></span>
+        <text class="text1"> 活动截止时间：</text><text class="text2">{{endTime}}</text>
+    </view>
+  </view>
+
+  <view class="groupBuy-content3" style="margin-bottom: 20rpx; padding-bottom:20rpx;">
+    <view class="groupBuy-content3-1 line">
+      <view class="_groupBuy-content3-1 groupBuy-content3-1-1">商品详情</view>
+    </view>
+    <view class="description">{{description}}</view>
+  </view>
+
+  <view class="groupBuy-content3" wx:if="{{tuanCount !== 0}}">
+    <view class="groupBuy-content3-1">
+      <view class="_groupBuy-content3-1 groupBuy-content3-1-1">{{tuanCount}}人在开团</view>
+      <view class="groupBuy-content3-1-2 iconfont" @tap="lookingmore(1)">查看更多</view>
+    </view>
+    <view class="groupBuy-content3-2" wx:for="{{tuanList}}" wx:key="item">
+      <view class="groupBuy-content3-2-1">
+        <view class="groupBuy-content3-2-1-1">
+          <image src="{{item.avatar}}" mode="aspectFill"/>
+        </view>
+        <view class="groupBuy-content3-2-1-2">
+          <view class="groupBuy-content3-2-1-2-1">{{item.name}}</view>
+          <view class="groupBuy-content3-2-1-2-2">还差{{item.userCount}}人，剩余{{item.time}}</view>
+        </view>
+      </view>
+      <view class="groupBuy-content3-2-2" @tap="joingroup({{item.tuanId}})">去参团</view>
+    </view>
+  </view>
+  <view class="zw"></view>
+  <release :activityId.sync="activityId" :categoryId.sync="categoryId" :themeId.sync="themeId" :source.sync="source" wx:if="{{status == 1}}"/>
+  <view class="footer" wx:if="{{status == 2}}">
+    <!--<view class="footer-li">-->
+      <!--<view class="footer-li-1">-->
+        <!--<view class="ico home"></view>-->
+        <!--<view class="txt">首页</view>-->
+      <!--</view>-->
+    <!--</view>-->
+    <!--<view class="footer-li">-->
+      <!--<view class="footer-li-1">-->
+        <!--<view class="ico sc"></view>-->
+        <!--<view class="txt">收藏</view>-->
+      <!--</view>-->
+    <!--</view>-->
+    <!--<view class="footer-li">-->
+      <!--<view class="footer-li-1">-->
+        <!--<view class="ico kf"></view>-->
+        <!--<view class="txt">电话</view>-->
+      <!--</view>-->
+    <!--</view>-->
+    <view class="footer-li ddgm" @tap="check(1)">
+      <view class="footer-li-1">
+        <view class="m">￥{{salePrice}}</view>
+        <view>单独购买</view>
+      </view>
+    </view>
+    <view class="footer-li yjkt" @tap="check(2)">
+      <view class="footer-li-1">
+        <view class="m">￥{{floorPrice}}</view>
+        <view>一键开团</view>
+      </view>
+    </view>
+  </view>
+  <!-- more group-->
+  <view class="moregroup" wx:if="{{togglemore == '1'}}">
+    <view class="moregroup-box">
+      <view class="title">正在开团
+        <view class="ico del hidemore" @tap="lookingmore(0)"></view>
+      </view>
+      <view class="groupBuy-content3-2" wx:for="{{tuanListmore}}" wx:key="item">
+        <view class="groupBuy-content3-2-1">
+          <view class="groupBuy-content3-2-1-1">
+            <image src="{{item.avatar}}" mode="aspectFill"/>
+          </view>
+          <view class="groupBuy-content3-2-1-2">
+            <view class="groupBuy-content3-2-1-2-1">{{item.name}}</view>
+            <view class="groupBuy-content3-2-1-2-2">还差{{item.userCount}}人，剩余{{item.time}}</view>
+          </view>
+        </view>
+        <view class="groupBuy-content3-2-2" @tap="joingroup({{item.tuanId}})" >去参团</view>
+      </view>
+      <view class="moregroup-footer">仅显示5个正在开团的人
+      </view>
+    </view>
+  </view>
+  <alert/>
+  <maskAlert :statusType.sync="statusGroup" :describeStr.sync="describeStr" />
+  <activeStateCheck :activityId.sync="activityId" :APIServer.sync="APIServer" :accessToken.sync="accessToken" @goBuy.user="goBuy" :describeStr.sync="describeStr"/>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import {formatDate} from '../common/date';
+  import release from '../components/release';
+  import tool from '../common/tool';
+  import banner from '../components/banner';
+  import alert from '../components/alert';
+  import maskAlert from './maskAlert';
+  import activeStateCheck from '../components/activeStateCheck';
+  export default class detailsGroupBuy extends wepy.component {
+     props = {
+       LoadingState: {
+        type: Number,
+        twoWay: true
+      },
+      name: {
+        type: String,
+        twoWay: true
+      },
+      images: {
+          type: String,
+          twoWay: true
+      }
+    };
+    data = {
+      themeId: '',
+      source: '',
+      productId: '',
+      categoryId: '',
+      activityId: '',
+      salePrice: '',
+      floorPrice: '',
+      quantity: '',
+      extra: '',
+      status: '',
+      proDetail: '',
+      description: '',
+      filePaths: [],
+      groupBuying: '',
+      endTime: '',
+      togglemore: '0',
+      tuanList: [], // 以开团
+      userLimit: '0',
+      timerArr: [],
+      tuanCount: '',
+      nowtime: [],
+      tuanListmore: [], // 以开团 more
+      userLimitmore: '0',
+      tuanCountmore: '',
+      nowtimemore: [],
+      APIServer: '',
+      accessToken: '',
+      statusGroup: '',
+      describeStr: '活动暂时冻结，稍后再试！|活动已结束！|活动未发布！|活动已结束！|暂时不能购买！'
+    };
+    components = {
+      banner,
+      release,
+      alert,
+      maskAlert,
+      activeStateCheck
+    };
+    methods = {
+      check(val) {
+        let me = this;
+        me.$invoke('activeStateCheck', 'activeStateCheckFun', val);
+      },
+      lookingmore(type) {
+        let me = this;
+        me.togglemore = type;
+        if (type === '1') {
+          me.getProductDetailmore();
+        }
+      },
+      getQRCode() {
+        let imgInfo = {
+          img: this.proDetail.properties.filePaths[0],
+          title: this.proDetail.name,
+          des: this.proDetail.description
+        };
+        this.$parent.$parent.globalData.saveImgInfo = imgInfo;
+        this.$apply();
+        wepy.navigateTo({
+          url: 'QRCode'
+        });
+      },
+      goBuy(type) {
+        let orders = {
+          dataArr: [{
+            quantity: 1,
+            marketPrice: 0,
+            salePrice: type === '1' ? this.salePrice : this.floorPrice,
+            Thumbnails: this.filePaths[0],
+            name: this.proDetail.nathis,
+            productId: this.proDetail.products[0].productId,
+            id: this.proDetail.id,
+            vendorId: this.proDetail.userId
+          }],
+          activityId: this.proDetail.id,
+          categoryId: this.proDetail.categoryId,
+          goodType: this.proDetail.products[0].type,
+          buyType: type,
+          tuanId: 0
+        };
+        this.$parent.$parent.globalData.orders = orders;
+        wepy.navigateTo({
+          url: 'orderSure'
+        });
+      },
+      // 参加跟多的团
+      joingroup(tuanId) {
+        let url = `particulars?categoryId=${this.categoryId}&tuanId=${tuanId}&activityId=${this.activityId}`;
+        wepy.redirectTo({
+          url: url
+        });
+      }
+    };
+    watch = {
+      filePaths (newValue, oldValue) {
+        this.$invoke('banner', 'filePathsFun', newValue);
+      }
+    };
+    // 获取更多团
+    getProductDetailmore() {
+      let me = this;
+      let data = {
+       activityId: me.activityId,
+       size: 5
+      };
+      wepy.request({
+        url: `${this.$parent.$parent.APIServer}/guide/tuan/list/underway`,
+        header: {
+          'accessToken': this.$parent.$parent.globalData.accessToken
+        },
+        data: data,
+        success: function (data) {
+          let result = data.data.data;
+          // 以开的团
+          // if (result[0].tuanList) {
+          // me.tuanListmore = result[0].tuanList;
+          // me.userLimitmore = JSON.parse(result.properties).userLimit;
+          me.tuanListmore = result;
+          // me.tuanCountmore = result.extra.tuanCount;
+          if (me.tuanListmore.length > 0) {
+            for (let i = 0; i < me.tuanListmore.length; i++) {
+              let il = i;
+              me.tuanListmore[il].userCount = (me.userLimit - me.tuanListmore[il].userCount);
+              me.tuanListmore[il].time = (me.tuanListmore[il].endTime - tool.localCurrentTime());
+              me.nowtimemore[il] = me.tuanListmore[il].time;
+              me.tuanListmore[il].time = tool.daysRemaining(me.tuanListmore[il].time);
+              let times = setInterval(function() {
+                me.tuanListmore[il].time = tool.daysRemaining(--me.nowtimemore[il]);
+                me.$apply();
+              }, 1000);
+              me.timerArr.push(times);
+              me.$apply();
+            };
+          }
+          me.$apply();
+          // }
+        }
+      });
+    };
+    getProductDetail(id) {
+      let me = this;
+      wepy.request({
+        url: `${this.$parent.$parent.APIServer}/guide/activity/${id}`,
+        header: {
+          'accessToken': this.$parent.$parent.globalData.accessToken
+        },
+        success: function (data) {
+          let result = data.data.data;
+          me.proDetail = result;
+          me.status = result.status;
+          if (result) {
+            me.LoadingState = 1;
+            if (result.status === 1) { // 未发布
+              wepy.hideShareMenu();
+            }
+            let properties = JSON.parse(result.properties);
+            me.images = properties.filePaths[0];
+            me.filePaths = properties.filePaths;
+            me.salePrice = result.products[0].salePrice.toFixed(2);
+            me.floorPrice = result.products[0].floorPrice.toFixed(2);
+            me.quantity = result.activityProducts[0].quantity;
+            me.name = result.name;
+            me.extra = result.extra;
+            me.productId = result.activityProducts[0].productId;
+            me.description = result.description;
+            me.groupBuying = JSON.parse(result.properties).groupBuying;
+            me.endTime = formatDate(result.endTime, 'Y-m-d H:i');
+            // 以开的团
+            me.tuanList = result.extra.tuanList;
+            me.userLimit = JSON.parse(result.properties).userLimit;
+            me.tuanCount = result.extra.tuanCount;
+            me.statusGroup = {
+              status: me.status,
+              quantity: me.quantity
+            };
+            if (me.tuanList.length > 0) {
+              for (let i = 0; i < me.tuanList.length; i++) {
+                let il = i;
+                me.tuanList[il].userCount = (me.userLimit - me.tuanList[il].userCount);
+                me.tuanList[il].time = (me.tuanList[il].endTime - tool.localCurrentTime());
+                me.nowtime[il] = me.tuanList[il].time;
+                me.tuanList[il].time = tool.daysRemaining(me.tuanList[il].time);
+                let times = setInterval(function() {
+                  me.tuanList[il].time = tool.daysRemaining(--me.nowtime[il]);
+                  me.$apply();
+                }, 1000);
+                me.timerArr.push(times);
+                me.$apply();
+              };
+            }
+            me.$apply();
+          }
+        }
+      });
+    };
+    _clearInterval() {
+      let me = this;
+      for (let i = 0; i < me.timerArr.length; i++) {
+        clearInterval(me.timerArr[i]);
+      }
+      me.timerArr = [];
+    };
+    onLoadFun(optionsStr) {
+      let options = JSON.parse(optionsStr);
+      this.themeId = options.themeId;
+      this.source = options.source;
+      this.activityId = options.activityId;
+      this.categoryId = options.categoryId;
+      this.APIServer = this.$parent.$parent.APIServer;
+      this.accessToken = this.$parent.$parent.globalData.accessToken;
+      this.getProductDetail(this.activityId);
+      this.$apply();
+    }
+  }
+</script>

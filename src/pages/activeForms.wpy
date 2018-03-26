@@ -1,0 +1,862 @@
+<style>
+  page {
+    height: 100%;
+  }
+  .slogan {
+    margin: 40rpx 0 20rpx 20rpx;
+    color:  #686868;
+  }
+  .section {
+    margin: 10rpx 0;
+    border-bottom: 1px solid #f3f3f3;
+    display: flex;
+    width:100%;
+    text-align: left;
+  }
+  .forms {
+    border-top: 1rpx solid #f3f3f3;
+    margin: 40rpx 0;
+    background: #fff;
+    border-radius: 8rpx;
+    padding-top: 10rpx;
+  }
+  .LRLayout {
+    display: flex;
+    justify-content: space-between;
+  }
+  ._label {
+    margin: 19rpx 30rpx;
+    margin-right: 8rpx;
+    display: flex;
+    text-align: left;
+  }
+  .rightText {
+    margin: 20rpx;
+    display: flex;
+    color: #ccc;
+    text-align: left;
+  }
+  .serviceAgreement {
+    font-size: 30rpx;
+    color: #4d90fe;
+    margin-top: 2rpx;
+  }
+  .serviceRow {
+    margin-top: 20rpx;
+    margin-bottom: 20rpx;
+    display: flex;
+    padding: 20rpx;
+  }
+  .radioBox {
+    margin: 30rpx 0;
+    padding-bottom: 20rpx;
+    border-bottom: 1rpx solid #f3f3f3;
+  }
+  .selectTime {
+    margin-top: 10rpx;
+    border-bottom: 1rpx solid #f3f3f3;
+  }
+  .rulesPanel {
+    border-radius: 6rpx;
+    background: #fff;
+    margin: 20rpx 0;
+    color: #7b7b7b;
+    padding:20rpx 20rpx;
+    border-bottom: 1rpx solid #f3f3f3;
+    border-top: 1rpx solid #f3f3f3;
+    line-height: 1.8;
+  }
+  .formItem {
+    border-bottom: 1rpx solid #f3f3f3;
+    border-top: 1rpx solid #f3f3f3;
+    background: #fff;
+    padding: 20rpx;
+    display:flex;
+    margin: 20rpx 0;
+  }
+  .imgPanel {
+    background: #fff;
+    border-bottom: 1rpx solid #f3f3f3;
+    border-top: 1rpx solid #f3f3f3;
+    padding: 20rpx;
+    display: flex;
+  }
+  .uploadText {
+    flex: 3;
+    vertical-align: middle;
+    margin: auto 0;
+  }
+  .imgContent {
+    display: flex;
+    flex: 10;
+    flex-wrap: wrap;
+  }
+  .addBtn {
+    margin: 10rpx;
+    width: 100rpx;
+    height: 100rpx;
+    border:1px solid #cccccc;
+    text-align: center;
+    vertical-align: middle;
+  }
+  .images {
+    margin: 10rpx;
+  }
+  .deleteMask {
+    width: 100rpx;
+    background: #000000;
+    text-align: center;
+    margin: auto 0;
+    padding: 10rpx 0;
+    opacity: 0.5;
+    color: #fff;
+    position: absolute;
+    z-index: 10;
+
+  }
+  .lxdz{
+    white-space:nowrap;
+  }
+  .zw{
+    width: 100%;
+    height: 120rpx;
+  }
+  .formItem-titl{
+    white-space:nowrap;
+    margin:8rpx 8rpx 0 0 ;
+  }
+  .r_label{
+    margin-right: 0;
+  }
+  .formItem input,.LRLayout input{
+    flex: 1;
+  }
+  .formItemtextarea {
+    height: 150px;
+  }
+  .formItemtextarea textarea{
+    width: 100%;
+    height: inherit;
+  }
+</style>
+
+<template>
+  <view class="slogan">做个活雷锋！造个福利分享出去！</view>
+  <view class='rulesPanel' @tap="togglePanel">
+    <text style="color:#33acfe">点我查看活动规则 </text>
+    <view class="content" wx:if="{{hideRule}}">
+      <view wx:if="{{categoryId == 100}}">
+        <view class="subTitle">定价秒降杀规则：</view>
+        <view class="indent">
+          1、在限定的时间内竞价标的的竞价由高到低依次递减直到第一个竞价人应价（达到或超过底价）时击槌成交的一种竞价交易。
+        </view>
+        <view class="indent">
+          2、原价：从什么价格开始降。一般为立即购买的价格。
+          底价：最低能降到的底价。客户出价必须大于等于底价才能成交。
+          活动截止日期：发布结束的日期。
+          消费截止日期：服务型活动的到店消费截止日期。
+        </view>
+        <view class="indent">
+          3、竞价者可1元预订一个购买价格。可多次出价定价。出价不退款。
+        </view>
+        <view class="indent">
+          4、在价格降到竞价者预订价格时，我们通过绑定的公众服务号提醒中标者。中标人有5分钟时间付款。在限定时间内未完成付款，价格继续下降直到降到下一位竞买者。
+        </view>
+        <view class="indent">
+          5、竞价中标原则：先按价格由高至低，然后时间先后顺序直至竞价结束。
+        </view>
+        <view class="indent">
+          6、在王牌推手确认收到物品或消费服务后，我们会放款给发布者；或中标人在消费或收货后第7个工作日仍然没有确认，付款将自动转与商家。
+        </view>
+        <view class="indent">
+          7、如果是购得实物，请与发布人直接联系物流。
+        </view>
+      </view>
+      <view wx:if="{{categoryId == 101}}">
+        <view class="subTitle">竞价全付杀规则：</view>
+        <view class="indent">
+          1、活动截止日期：发布结束的日期。
+          消费截止日期：服务型活动的到店消费截止日期。
+        </view>
+        <view class="indent">
+          2、价高者得。
+        </view>
+        <view class="indent">
+          3、如果所有竞标出价总和（最终价）小于标价，最终价可作为物品或服务的等值折扣使用。
+        </view>
+        <view class="indent">
+          4、不论最后谁中标，所有的投标人付出的投标出价不退还。
+        </view>
+        <view class="indent">
+          5、如果大于物品或服务价值，超出部分按人均相应比例退还至我的余额。
+        </view>
+        <view class="indent">
+          6、在王牌推手确认收到物品或消费服务后，我们会放款给发布者；或中标人在消费或收货后第7个工作日仍然没有确认，付款将自动转与商家。
+        </view>
+        <view class="indent">
+          7、如果是购得实物，请与发布人直接联系物流。
+        </view>
+      </view>
+      <view wx:if="{{categoryId == 102}}">
+        <view class="subTitle">团购砍价杀规则：</view>
+        <view class="indent">
+          1、活动截止日期：发布结束的日期。
+          消费截止日期：服务型活动的到店消费截止日期。
+        </view>
+        <view class="indent">
+          2、在达到限定的人数下，可以享受团购价格。没有达到人数的退款。
+        </view>
+      </view>
+    </view>
+  </view>
+  <view class="formItem" @tap="selectionColumn('activityColumn')">
+    <view class="formItem-titl">行业分类：</view>
+    <input type="text" placeholder=" (必填)" disabled="disabled" placeholder-style="color: #ccc" value="{{activityColumn}}"/>
+  </view>
+  <view class="formItem">
+    <view class="formItem-titl">活动名称：</view>
+    <input type="text" placeholder=" (必填)" @input="changeVal('activityName')"
+           placeholder-style="color: #ccc" value="{{activityName}}"/>
+  </view>
+  <view class="formItem">
+    <view class="formItem-titl">商铺名称：</view>
+    <input type="text" placeholder=" (选填)" @input="changeVal('shopName')"
+           placeholder-style="color: #ccc" value="{{shopName}}"/>
+  </view>
+  <view class="formItem">
+    <view class="formItem-titl">手机号码：</view>
+    <input type="number" placeholder=" (必填)" @input="changeVal('contact')"
+           placeholder-style="color: #ccc" value="{{contact}}"/>
+  </view>
+  <view class="formItem formItemtextarea">
+    <textarea wx:if="{{!isHide}}" placeholder-style="color: #ccc" maxlength="300" value="{{activityDetails}}"
+              placeholder="请描述活动 (必填，字数不得超过300字)"  @input="changeVal('activityDetails')"/>
+  </view>
+
+  <view class="imgPanel">
+    <view class="uploadText">上传图片：</view>
+    <view class="imgContent">
+      <view class="images" wx:for="{{activePictures}}" wx:key="item">
+        <view class="deleteMask" @tap="deletePictures({{index}})">删除</view>
+        <image  src="{{item}}" style="width: 100rpx; height: 100rpx;"></image>
+      </view>
+      <view class="addBtn" @tap="uploadImg" wx:if="{{activePictures.length < 9}}">
+        <view style="margin-top: 10rpx">
+          <span class="iconfont icon-add" style="font-size: 70rpx;color: #cccccc;"></span>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="forms">
+    <view class="LRLayout">
+      <view class="section">
+        <view class="_label">原价：</view>
+        <input type="digit" style="padding: 10rpx 0;margin-left: 0rpx" placeholder=" (必填)" placeholder-style="color: #ccc"
+               value="{{originalPrice}}" @input="changeVal('originalPrice')"/>
+      </view>
+    </view>
+    <view class="LRLayout" wx:if="{{categoryId == 100 || categoryId == 102 || categoryId == 103}}" placeholder-style="color: #ccc">
+      <view class="section">
+        <view class="_label">底价：</view>
+        <input type="digit" style="padding: 10rpx 0;margin-left: 0rpx" placeholder=" (必填)" placeholder-style="color: #ccc"
+               value="{{floorPrice}}" @input="changeVal('floorPrice')"/>
+      </view>
+    </view>
+    <view class="LRLayout" wx:if="{{categoryId == 102}}">
+      <view class="section">
+        <view class="_label">团购人数：</view>
+        <input type="number" style="padding: 10rpx 0;margin-left: 30rpx" placeholder=" (必填)" placeholder-style="color: #ccc"
+               value="{{numberRestriction}}" @input="changeVal('numberRestriction')"/>
+      </view>
+    </view>
+    <view class="LRLayout" wx:if="{{categoryId == 102}}">
+      <view class="section">
+        <view class="_label">库存数量：</view>
+        <input type="number" style="padding: 10rpx 0;margin-left: 30rpx" placeholder=" (必填)" placeholder-style="color: #ccc"
+               value="{{commodityQuantity}}" @input="changeVal('commodityQuantity')"/>
+      </view>
+    </view>
+    <view class="LRLayout selectTime" @tap="selectionTime('activityDeadline')" wx:if="{{categoryId !== '100'}}">
+      <view class="_label r_label">活动截止时间：</view>
+      <view class="rightText">{{activityDeadline || '(必填)'}}</view>
+    </view>
+    <view class="radioBox">
+      <radio-group class="radio-group" bindchange="radioChange">
+        <label class="radio" style="margin: 0 60rpx 0 30rpx">
+          <radio value="1" checked="{{goodsType == 1}}"/>实物商品
+        </label>
+        <label class="radio">
+          <radio value="2" checked="{{goodsType == 2}}"/>服务
+        </label>
+      </radio-group>
+    </view>
+    <view wx:if="{{goodsType == 2}}">
+      <view class="LRLayout selectTime" @tap="selectionTime('consumptionDeadline')">
+        <view class="_label r_label">消费截止时间：</view>
+        <view class="rightText">{{consumptionDeadline || '(必填)'}}</view>
+      </view>
+      <view class="LRLayout selectTime" @tap="selectMerchantAddress">
+        <view class="_label lxdz r_label">商家联系地址：</view>
+        <view class="rightText">{{merchantAddress.name || '(必填)'}} {{merchantAddress.phone}} {{merchantAddress.province}}{{merchantAddress.city}}{{merchantAddress.address}}</view>
+      </view>
+    </view>
+  </view>
+  <view class="slogan" wx:if="{{categoryId == 100}}">
+    该活动的降价规则为每分钟1元
+  </view>
+  <view class="serviceRow">
+    <checkbox-group @change="serviceAgreementChange">
+      <label class="checkbox">
+        <checkbox value="{{serviceAgreement}}" checked="{{serviceAgreement}}"/>
+      </label>
+    </checkbox-group>
+    <navigator url="serviceAgreement" hover-class="navigator-hover">
+      <view class="serviceAgreement">已经阅读服务协议</view>
+    </navigator>
+  </view>
+  <choiceColumn @ensure.user="ensure" @isShow.user="isShow"/>
+  <choiceTime @ensureTime.user="ensureTime"/>
+  <view class="zw"></view>
+  <editRelease @releaseChange.user="releaseChange" @saveAndPreviewChange.user="saveAndPreviewChange"/>
+  <alert/>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import {formatDate} from '../common/date';
+  import editRelease from '../components/editRelease';
+  import choiceTime from '../components/choiceTime';
+  import alert from '../components/alert';
+  import choiceColumn from '../components/choiceColumn';
+  import tool from '../common/tool';
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '发布活动'
+    };
+    data = {
+      source: '', // 来源
+      themeId: '', // 主题ID
+      activityColumn: '', // 活动栏目
+      columnId: '', // 活动栏目ID
+      activityName: '', // 活动或商品名称
+      shopName: '', // 商家名称
+      activityDetails: '', // 活动详情
+      activePictures: [], // 活动图片
+      originalPrice: '', // 原价
+      floorPrice: '', // 底价
+      activityDeadline: '', // 活动截至时间
+      goodsType: 1, // 商品类型
+      consumptionDeadline: '', // 消费截至时间
+      merchantAddress: '', // 商家地址
+      activityId: '', // 活动详情id
+      categoryId: '', // 活动类型id
+      commodityQuantity: 1, // 商品数量
+      numberRestriction: '', // 人数限制
+      serviceAgreement: 1, // 服务协议
+      // ==========
+      activeFormsType: '', // 活动表单类型1：新增，2：修改
+      postData: '', // 发布时需要的所有数据与结构
+      hideRule: false, // 规则描述
+      contact: '', // 联系电话
+      isHide: 0
+    };
+    components = {
+      editRelease,
+      choiceTime,
+      alert,
+      choiceColumn
+    };
+    methods = {
+      togglePanel() {
+        this.hideRule = !this.hideRule;
+        this.$apply();
+      },
+      changeVal(keys, e) {
+        this[keys] = e.detail.value;
+        this.$apply();
+      },
+      uploadImg() {
+        let me = this;
+        wepy.chooseImage({
+          success: function (res) {
+            var tempFilePaths = res.tempFilePaths;
+            for (let i in tempFilePaths) {
+              wepy.uploadFile({
+                url: `${me.$parent.APIServer}/guide/file/upload`,
+                header: {
+                  'Content-Type': 'multipart/form-data',
+                  'accessToken': me.$parent.globalData.accessToken
+                },
+                filePath: tempFilePaths[i],
+                name: 'file',
+                success: function(res) {
+                  let filepath = JSON.parse(res.data).data;
+                  me.activePictures.push(filepath);
+                  me.$apply();
+                }
+              });
+            }
+          }
+        });
+      },
+      selectionColumn(type) {
+        this.$invoke('choiceColumn', 'setShowColumn', type);
+      },
+      ensure(value) {
+        if (!value[1]) {
+          this[value[2]] = `${value[0]}`;
+          this.columnId = tool.query(this.$parent.globalData.column, value[0], 'name', 'id');
+        } else {
+          this[value[2]] = `${value[0]}/${value[1]}`;
+          this.childrenColumn = tool.query(this.$parent.globalData.column, value[0], 'name', 'children');
+          this.columnId = tool.query(this.childrenColumn, value[1], 'name', 'id');
+        }
+        this.$apply();
+      },
+      isShow(value) {
+        this.isHide = value;
+        this.$apply();
+      },
+      selectionTime(type) {
+        this.$invoke('choiceTime', 'setShowDateTime', type);
+      },
+      ensureTime(time) {
+        this[time[5]] = `${time[0]}-${time[1]}-${time[2]} ${time[3]}:${time[4]}`;
+        this.$apply();
+      },
+      serviceAgreementChange(e) {
+        if (e.detail.value === 1) {
+          this.serviceAgreement = e.detail.value;
+        } else {
+          this.serviceAgreement = 0;
+        }
+        this.$apply();
+      },
+      selectMerchantAddress() {
+        let me = this;
+        wepy.chooseAddress({
+          success: function (res) {
+            me.merchantAddress = {
+              name: res.userName,
+              phone: res.telNumber,
+              province: res.provinceName,
+              city: res.cityName,
+              address: res.detailInfo
+            };
+            me.$apply();
+          }
+        });
+      },
+      releaseChange() {
+        let me = this;
+        if (me.activeFormsType === '1') {
+          me.addReleaseActivity();
+        } else if (me.activeFormsType === '2') {
+          me.modifyActivity();
+        }
+      },
+      saveAndPreviewChange() {
+        let me = this;
+        if (me.activeFormsType === '1') {
+          me.preservationActivity();
+        } else if (me.activeFormsType === '2') {
+          me.modifyAndPreviewActivity();
+        }
+      },
+      radioChange(e) {
+        this.goodsType = e.detail.value;
+        this.$apply();
+      },
+      deletePictures(index) {
+        this.activePictures.splice(index, 1);
+        this.$apply();
+      }
+    };
+    bindThemeAjax() {
+      let me = this;
+      let postData = {
+        activityId: me.activityId,
+        themeId: me.themeId
+      };
+      wepy.request({
+        url: `${me.$parent.APIServer}/guide/theme/join`,
+        method: 'POST',
+        header: {
+          'accessToken': me.$parent.globalData.accessToken
+        },
+        data: postData,
+        success: function (data) {
+          wepy.hideLoading();
+          let result = data.data.data;
+          if (result) {
+            wepy.showToast({
+              title: '绑定成功',
+              icon: 'success',
+              duration: 1000
+            });
+            setTimeout(function () {
+              wepy.redirectTo({
+                url: `themeReleaseCompleted?themeId=${me.themeId}&categoryId=${me.categoryId}&activityId=${me.activityId}`
+              });
+            }, 1000);
+          } else {
+            if (data.data.stat !== 200) {
+              wepy.showModal({
+                title: '绑定失败',
+                showCancel: false,
+                content: data.data.error
+              });
+            }
+          }
+        }
+      });
+    };
+    bindTheme() {
+      let me = this;
+      wepy.showLoading({title: '绑定主题中', mask: true});
+      setTimeout(function () {
+        me.bindThemeAjax();
+      }, 2000);
+    };
+    async addReleaseActivity() {
+      wepy.showLoading({title: '发布中', mask: true});
+      let me = this;
+      await me.check();
+      let postData = me.postData;
+      wepy.request({
+        url: `${me.$parent.APIServer}/guide/activity/publish`,
+        method: 'POST',
+        header: {
+          'accessToken': me.$parent.globalData.accessToken
+        },
+        data: postData,
+        success: function (data) {
+          wepy.hideLoading();
+          let result = data.data.data;
+          if (result) {
+            me.activityId = result.id;
+            wepy.showToast({
+              title: '发布成功',
+              icon: 'success',
+              duration: 1000
+            });
+            setTimeout(function () {
+              if (me.source === 'theme') {
+                me.bindTheme();
+              } else {
+                wepy.redirectTo({
+                  url: `activityReleaseCompleted?activityId=${result.id}`
+                });
+              }
+            }, 1000);
+          } else {
+            wepy.showModal({
+              title: '发布失败',
+              showCancel: false,
+              content: data.data.error
+            });
+          }
+        }
+      });
+    }; // 新建并且发布活动
+    async modifyActivity() {
+      wepy.showLoading({title: '保存中', mask: true});
+      let me = this;
+      await me.check();
+      let postData = me.postData;
+      wepy.request({
+        url: `${me.$parent.APIServer}/guide/activity/${me.activityId}`,
+        method: 'PUT',
+        header: {
+          'accessToken': me.$parent.globalData.accessToken
+        },
+        data: postData,
+        success: function (data) {
+          wepy.hideLoading();
+          let result = data.data.data;
+          if (result) {
+            me.modifyReleaseActivity();
+          } else {
+            wepy.showModal({
+              title: '修改失败',
+              showCancel: false,
+              content: data.data.error
+            });
+          }
+        }
+      });
+    }; // 修改活动并发布
+    async modifyAndPreviewActivity() {
+      wepy.showLoading({title: '保存中', mask: true});
+      let me = this;
+      await me.check();
+      let postData = me.postData;
+      wepy.request({
+        url: `${me.$parent.APIServer}/guide/activity/${me.activityId}`,
+        method: 'PUT',
+        header: {
+          'accessToken': me.$parent.globalData.accessToken
+        },
+        data: postData,
+        success: function (data) {
+          wepy.hideLoading();
+          let result = data.data.data;
+          if (result) {
+            wepy.redirectTo({
+              url: `eventDetails?categoryId=${me.categoryId}&activityId=${me.activityId}&themeId=${me.themeId}&source=${me.source}`
+            });
+          } else {
+            wepy.showModal({
+              title: '修改失败',
+              showCancel: false,
+              content: data.data.error
+            });
+          }
+        }
+      });
+    }; // 修改活动并预览但是未发布
+    async modifyReleaseActivity() {
+      wepy.showLoading({title: '发布中', mask: true});
+      let me = this;
+      wepy.request({
+        url: `${me.$parent.APIServer}/guide/activity/publish`,
+        method: 'POST',
+        header: {
+          'accessToken': me.$parent.globalData.accessToken
+        },
+        data: {
+          id: me.activityId
+        },
+        success: function (data) {
+          wepy.hideLoading();
+          let result = data.data.data;
+          if (result) {
+            me.$invoke('alert', 'alertFun', '活动发布成功');
+            setTimeout(function () {
+              if (me.source === 'theme') {
+                me.bindTheme();
+              } else {
+                wepy.navigateTo({
+                  url: `activityReleaseCompleted?activityId=${result.id}`
+                });
+              }
+            }, 1000);
+          } else {
+            wepy.showModal({
+              title: '发布失败',
+              showCancel: false,
+              content: data.data.error
+            });
+          }
+        }
+      });
+    }; // 修改后根据activityId发布活动
+    async preservationActivity() {
+      wepy.showLoading({title: '保存中', mask: true});
+      let me = this;
+      await me.check();
+      let postData = me.postData;
+      wepy.request({
+        url: `${me.$parent.APIServer}/guide/activity`,
+        method: 'POST',
+        header: {
+          'accessToken': me.$parent.globalData.accessToken
+        },
+        data: postData,
+        success: function (data) {
+          wepy.hideLoading();
+          let result = data.data.data;
+          if (result) {
+            me.activityId = result.id;
+            wepy.redirectTo({
+              url: `eventDetails?categoryId=${me.categoryId}&activityId=${me.activityId}&themeId=${me.themeId}&source=${me.source}`
+            });
+          }
+        }
+      });
+    }; // 新增保存活动
+    check() {
+      let me = this;
+      wepy.hideLoading();
+      return new Promise((resolve, reject) => {
+        if (!me.activityColumn) {
+          me.$invoke('alert', 'alertFun', '活动分类不能为空');
+          return false;
+        }
+        if (!me.activityName) {
+          me.$invoke('alert', 'alertFun', '活动名称不能为空');
+          return false;
+        }
+        if (!me.contact || !(/^1[34578]\d{9}$/.test(me.contact))) {
+          me.$invoke('alert', 'alertFun', '手机号码为空或有误');
+          return false;
+        }
+        if (!me.activityDetails) {
+          me.$invoke('alert', 'alertFun', '活动详情不能为空');
+          return false;
+        }
+        if (!me.activePictures.length) {
+          me.$invoke('alert', 'alertFun', '至少上传一张图片');
+          return false;
+        }
+        if (!me.originalPrice || Number(me.originalPrice) <= 0 || Number(me.originalPrice) > 99999999.99) {
+          me.$invoke('alert', 'alertFun', '活动原价为空或有误');
+          return false;
+        }
+        if (Number(me.categoryId) === 100) {
+          if ((!me.floorPrice || Number(me.floorPrice) <= 0) || (Number(me.floorPrice) >= Number(me.originalPrice))) {
+            me.$invoke('alert', 'alertFun', '活动底价为空或有误');
+            return false;
+          }
+        }
+        if (Number(me.categoryId) === 102) {
+          if ((!me.floorPrice || Number(me.floorPrice) <= 0) || (Number(me.floorPrice) >= Number(me.originalPrice))) {
+            me.$invoke('alert', 'alertFun', '活动底价为空或有误');
+            return false;
+          }
+          if (!me.numberRestriction) {
+            me.$invoke('alert', 'alertFun', '团购人数不能为空');
+            return false;
+          }
+          if (me.numberRestriction < 2) {
+            me.$invoke('alert', 'alertFun', '团购人数至少2个');
+            return false;
+          }
+          if (me.numberRestriction > 12) {
+            me.$invoke('alert', 'alertFun', '团购人数不能大于12个');
+            return false;
+          }
+          if (!me.commodityQuantity) {
+            me.$invoke('alert', 'alertFun', '库存不能为空');
+            return false;
+          }
+          if (me.commodityQuantity < 1) {
+            me.$invoke('alert', 'alertFun', '库存至少大于1');
+            return false;
+          }
+          if (Number(me.commodityQuantity) < Number(me.numberRestriction)) {
+            me.$invoke('alert', 'alertFun', '库存不能少于团购人数');
+            return false;
+          }
+          if (me.commodityQuantity > 9999) {
+            me.$invoke('alert', 'alertFun', '库存至不能大于9999');
+            return false;
+          }
+        }
+        if (Number(me.categoryId) === 101 || Number(me.categoryId) === 102) {
+          if (!me.activityDeadline) {
+            me.$invoke('alert', 'alertFun', '活动截止时间不能为空');
+            return false;
+          }
+        }
+        if (!me.consumptionDeadline && Number(me.goodsType) === 2) {
+          me.$invoke('alert', 'alertFun', '消费截止时间不能为空');
+          return false;
+        }
+        if ((Number(me.activityDeadline) >= Number(me.consumptionDeadline)) && Number(me.goodsType) === 2) {
+          me.$invoke('alert', 'alertFun', '活动截止时间不能晚于消费截止时间');
+          return false;
+        }
+        if (!me.merchantAddress && Number(me.goodsType) === 2) {
+          me.$invoke('alert', 'alertFun', '地址不能为空');
+          return false;
+        }
+        if (!me.serviceAgreement) {
+          me.$invoke('alert', 'alertFun', '请阅读服务协议');
+          return false;
+        }
+        let postData = {
+          activityProducts: [{
+            quantity: me.commodityQuantity,
+            activityId: me.activityId,
+            phone: me.contact
+          }],
+          id: me.activityId,
+          categoryId: me.categoryId,
+          description: me.activityDetails,
+          endTime: formatDate(me.activityDeadline, 'integer'),
+          name: me.activityName,
+          products: [{
+            categoryId: me.columnId,
+            floorPrice: me.floorPrice,
+            marketPrice: 0,
+            name: me.activityName,
+            properties: JSON.stringify({address: me.merchantAddress, vendorName: me.shopName, endTime: formatDate(me.consumptionDeadline, 'integer')}),
+            salePrice: me.originalPrice,
+            type: me.goodsType
+          }],
+          properties: JSON.stringify({interval: 1, discount_amplitude: 1, filePaths: me.activePictures, groupBuying: me.numberRestriction, userLimit: me.numberRestriction}),
+          startTime: 0
+        };
+        me.postData = postData;
+        resolve(true);
+      });
+    };
+    init() {
+      this.source = ''; // 来源
+      this.themeId = ''; // 主题ID
+      this.activityColumn = ''; // 活动栏目
+      this.columnId = ''; // 活动栏目ID
+      this.activityName = ''; // 活动或商品名称
+      this.shopName = ''; // 商家名称
+      this.activityDetails = ''; // 活动详情
+      this.activePictures = []; // 活动图片
+      this.originalPrice = ''; // 原价
+      this.floorPrice = ''; // 底价
+      this.activityDeadline = ''; // 活动截至时间
+      this.goodsType = 1; // 商品类型
+      this.consumptionDeadline = ''; // 消费截至时间
+      this.merchantAddress = ''; // 商家地址
+      this.activityId = ''; // 活动详情id
+      this.categoryId = ''; // 活动类型id
+      this.commodityQuantity = 1; // 商品数量
+      this.numberRestriction = ''; // 人数限制
+      this.serviceAgreement = 1; // 服务协议
+      // ==========
+      this.activeFormsType = ''; // 活动表单类型1：新增，2：修改
+      this.postData = ''; // 发布时需要的所有数据与结构
+      this.hideRule = false; // 规则描述
+      this.contact = ''; // 手机号码
+      this.isHide = 0;
+    };
+    onLoad(options) {
+      let me = this;
+      me.init();
+      me.themeId = options.themeId;
+      me.source = options.source;
+      me.categoryId = options.categoryId;
+      me.activeFormsType = options.activeFormsType;
+      if (me.activeFormsType === '2') { // 修改活动
+        wepy.setNavigationBarTitle({title: '修改活动'});
+        me.activityId = options.activityId;
+        wepy.request({
+          url: `${me.$parent.APIServer}/guide/activity/${me.activityId}`,
+          header: {
+            'accessToken': me.$parent.globalData.accessToken
+          },
+          success: function (data) {
+            let result = data.data.data;
+            me.activityColumn = result.productCategoryName;
+            me.columnId = result.products[0].categoryId;
+            me.activityName = result.name;
+            me.shopName = JSON.parse(result.products[0].properties).vendorName;
+            me.activityDetails = result.description;
+            me.activePictures = JSON.parse(result.properties).filePaths;
+            me.originalPrice = result.products[0].salePrice;
+            me.floorPrice = result.products[0].floorPrice;
+            me.activityDeadline = formatDate(result.endTime, 'Y-m-d H:i');
+            me.goodsType = result.products[0].type;
+            me.consumptionDeadline = formatDate(JSON.parse(result.products[0].properties).endTime, 'Y-m-d H:i');
+            me.merchantAddress = JSON.parse(result.products[0].properties).address;
+            me.commodityQuantity = result.activityProducts[0].quantity;
+            me.numberRestriction = JSON.parse(result.properties).groupBuying;
+            me.contact = result.activityProducts[0].phone;
+            me.$apply();
+          }
+        });
+      }
+      me.$apply();
+    }
+  }
+</script>

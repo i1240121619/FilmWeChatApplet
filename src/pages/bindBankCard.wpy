@@ -1,0 +1,170 @@
+<style>
+  .forms {
+    margin: 40rpx 20rpx;
+    background: #fff;
+  }
+  .section {
+    margin: 20rpx;
+    border-bottom: 1px solid #cccccc;
+    display: flex;
+    width: 100%;
+  }
+  .inputLabel {
+    line-height: 50rpx;
+    padding-right: 20rpx;
+    white-space:nowrap;
+  }
+  .LRLayout {
+    display: flex;
+    justify-content: space-between;
+    overflow: hidden;
+  }
+  .btns {
+    margin: 20rpx;
+    display: flex;
+    width: 100%;
+  }
+  .radioBox {
+    margin:20rpx;
+  }
+  .section input{
+    width: 480rpx;
+  }
+
+</style>
+
+<template>
+  <view class="forms">
+    <picker bindchange="bindPickerChange" value="{{index}}" range="{{array}}">
+    <view class="LRLayout">
+      <view class="section">
+        <view class="inputLabel">收款银行：</view>
+        <input value="{{bank}}" placeholder="中国建设银行 (必填)" disabled @input="changeValue('bank')"/>
+      </view>
+    </view>
+    </picker>
+    <view class="LRLayout">
+      <view class="section">
+        <view class="inputLabel">开户地分行：</view>
+        <input value="{{registerAddress}}" placeholder="湖南省长沙市金星路支行 (必填)" @input="changeValue('registerAddress')"/>
+      </view>
+    </view>
+    <view class="LRLayout">
+      <view class="section">
+        <view class="inputLabel">银行账号：</view>
+        <input value="{{bankCard}}" placeholder="(必填)" type="number" @input="changeValue('bankCard')"/>
+      </view>
+    </view>
+    <view class="LRLayout">
+      <view class="section">
+        <view class="inputLabel">收款人：</view>
+        <input value="{{payee}}" placeholder="(必填)" @input="changeValue('payee')"/>
+      </view>
+    </view>
+
+    <view class="LRLayout">
+      <view class="btns">
+        <button type="primary" @tap="bindBankCard()" style="width: 100%"> 绑定银行卡 </button>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '绑定银行卡'
+    };
+    data = {
+      array: ['中国工商银行', '中国农业银行', '中国银行', '中国建设银行'],
+      bank: '',
+      registerAddress: '',
+      bankCard: '',
+      payee: ''
+    };
+    methods = {
+      bindPickerChange: function(e) {
+        this.bank = this.array[e.detail.value];
+      },
+      radioChange: function(e) {
+        this.payStatus = e.detail.value;
+        this.$apply();
+      },
+      changeValue(val, e) {
+        this[val] = e.detail.value.replace(/\s+/g, '');
+        this.$apply();
+      },
+      async bindBankCard() {
+        let me = this;
+        await me.check();
+        wepy.request({
+          url: `${this.$parent.APIServer}/guide/bank`,
+          method: 'POST',
+          header: {
+            'accessToken': this.$parent.globalData.accessToken
+          },
+          data: {
+            bank: me.bank,
+            registerAddress: me.registerAddress,
+            bankCard: me.bankCard,
+            payee: me.payee
+          },
+          success: function (data) {
+            let result = data.data.data;
+            if (result) {
+              wepy.showToast({title: '绑定成功', mask: 1, duration: 2000});
+              setTimeout(function () {
+                wepy.navigateBack({
+                  url: `optionBank`
+                });
+              }, 2000);
+            }
+          }
+        });
+      }
+    };
+    check() {
+      let me = this;
+      return new Promise((resolve, reject) => {
+        if (!me.bank) {
+          wepy.showToast({title: '收款银行为空', image: '../assets/img/toast-icon.png', mask: 1, duration: 1000});
+          return false;
+        }
+        if (!me.registerAddress) {
+          wepy.showToast({title: '开户地分行为空', image: '../assets/img/toast-icon.png', mask: 1, duration: 1000});
+          return false;
+        }
+        if (!me.bankCard) {
+          wepy.showToast({title: '银行账号为空', image: '../assets/img/toast-icon.png', mask: 1, duration: 1000});
+          return false;
+        }
+        let num = /^\d*$/;
+        if (!num.exec(me.bankCard)) {
+          wepy.showToast({title: '账号必须为数字', image: '../assets/img/toast-icon.png', mask: 1, duration: 1000});
+          return false;
+        }
+        if (me.bankCard.length < 16 || me.bankCard.length > 19) {
+          wepy.showToast({title: '账号长度不对', image: '../assets/img/toast-icon.png', mask: 1, duration: 1000});
+          return false;
+        }
+        let strBin = '10,18,30,35,37,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,58,60,62,65,68,69,84,87,88,94,95,98,99';
+        if (strBin.indexOf(me.bankCard.substring(0, 2)) === -1) {
+          wepy.showToast({title: '账号不符合规范', image: '../assets/img/toast-icon.png', mask: 1, duration: 1000});
+          return false;
+        }
+        if (!me.payee) {
+          wepy.showToast({title: '收款人为空', image: '../assets/img/toast-icon.png', mask: 1, duration: 1000});
+          return false;
+        }
+        resolve(true);
+      });
+    };
+    onLoad() {
+      this.bank = '';
+      this.registerAddress = '';
+      this.bankCard = '';
+      this.payee = '';
+    }
+  }
+</script>

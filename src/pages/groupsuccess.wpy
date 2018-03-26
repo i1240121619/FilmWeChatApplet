@@ -1,0 +1,246 @@
+<style>
+  .astrict{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .redcolor{
+    color:#df2e24;
+  }
+  .content-head{
+    text-align:center;
+    color:#18d010;
+    font-size:34rpx;
+    line-height:80rpx;
+    font-weight:900;
+  }
+  .content-head radio{
+    margin-right:20rpx;
+  }
+  .content-loock{
+    text-align:center;
+    line-height:50rpx;
+    font-size:26rpx;
+    color:#b5b5b5;
+    font-weight:900;
+    margin-bottom:10rpx;
+  }
+  .content-invite{
+    weight:80%;
+    margin:0 auto;
+    text-align:center;
+    padding:20rpx;
+    background:#df2e24 !important;
+    color:#fff !important;
+    font-size:30rpx;
+    border-radius:10rpx;
+  }
+  .content-invite-tow{
+    weight:80%;
+    margin:0 auto;
+    text-align:center;
+    background:#df2e24 !important;
+    color:#fff !important;
+    font-size:30rpx;
+    border-radius:10rpx;
+  }
+  .content-share{
+    border-bottom:20rpx solid #eff3f2;
+    padding:20rpx 0;
+  }
+  .group-quantity{
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+  .group-quantity-box{
+    width:80rpx;
+    height:80rpx;
+    border-radius:80rpx;
+    margin-right:20rpx;
+    box-sizing:border-box;
+    margin-top:20rpx;
+    position:relative;
+    text-align:center;
+  }
+  .group-quantity-box image{
+    display:black;
+    width:100%;
+    height:100%;
+    border-radius:80rpx;
+}
+  .group-quantity-box span{
+    font-size:40rpx;
+    line-height:80rpx;
+    color:#c7c7c7;
+}
+  .group-quantity-boss{
+    position: absolute;
+    top:-15rpx;
+    left:-3rpx;
+    z-index:20;
+    font-size:12px;
+    font-weight:900;
+    padding:3rpx 5rpx;
+    color:#ae7600;
+    background:#f9aa2b;
+    border-radius:12rpx;
+    border:2px solid #fff;
+}
+  .membersRadius{
+    border:4rpx dashed #c7c7c7 ;
+}
+  .bossRadius{
+    border:4rpx solid #eecc47 ;
+}
+  .footer-commodity{
+    border-bottom:2rpx solid #eff3f2;
+    line-height:80rpx;
+    font-size:28rpx;
+    color:#303030;
+    width:95%;
+    margin:0 auto;
+    margin-top:10rpx;
+    display:flex;
+    justify-content:space-between;
+}
+  .footer-titl{
+   flex:3;
+  }
+  .footer-name{
+    flex:6;
+    text-align:right;
+}
+</style>
+<template>
+  <view>
+    <view>
+      <view class="content-head" wx:if="{{status == 2}}">
+        <radio checked="checked"></radio>拼团成功
+      </view>
+      <view class="content-head" wx:if="{{status == 1}}">
+        拼团中
+      </view>
+      <view class="content-head" style="color:#df2e24;"  wx:if="{{status == 3}}">
+        拼团失败
+      </view>
+      <view class="content-loock"  wx:if="{{status == 2}}">
+       商家正在努力发货，请耐心等待！
+      </view>
+      <view class="content-loock" wx:if="{{status == 3}}">
+      商家正在退款，请耐心等待！
+      </view>
+       <view class="content-loock" wx:if="{{status == 1}}">
+      团人数不足，邀请好友开团
+      </view>
+     <view style="padding:0 50rpx;">
+        <view wx:if="{{status !== 1}}"class="content-invite"  @tap="Vieworderdetails()">查看订单</view>
+        <button wx:if="{{status == 1}}" class="content-invite-tow" type="default" open-type="share" >邀请好友参团</button>
+     </view>
+    </view>
+    <view class="group-quantity content-share">
+        <view class="group-quantity-box bossRadius" wx:for="{{groupimage}}" wx:key="{{index}}">
+          <view class="group-quantity-boss" wx:if="{{item.captain}}">团长</view>
+          <image src="{{item.userAvatar}}"></image>
+        </view>
+        <view class="group-quantity-box membersRadius" wx:for="{{userLimit}}" wx:key="{{index}}">
+          <span>?</span>
+        </view>
+    </view>
+    <view class="footer-commodity" @tap="backgroup()">
+      <view class="footer-titl">商品名称:</view>
+      <view class="astrict  footer-name " >{{productname}}</view>
+      <view class="iconfont icon-more"></view>
+    </view>
+    <view class="footer-commodity">
+      <view class="footer-titl">收货人:</view>
+      <view class="astrict  footer-name " >{{address.name}}</view>
+    </view>
+    <view class="footer-commodity">
+      <view class="footer-titl">收货地址:</view>
+      <view class="astrict  footer-name " >{{address.province}} {{address.city}} {{address.address}}</view>
+    </view>
+    <view class="footer-commodity">
+      <view class="footer-titl">成团时间:</view>
+      <view class="astrict  footer-name " >{{startTime}}</view>
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy';
+  import {formatDate} from '../common/date';
+  export default class Index extends wepy.page {
+    data = {
+      address: '',
+      status: '',
+      productname: '',
+      groupimage: '',
+      startTime: '',
+      userLimit: ''
+    };
+    methods = {
+       backgroup() {
+       wepy.navigateTo({
+          url: `eventDetails?categoryId=${this.categoryId}&activityId=${this.activityId}`
+        });
+      },
+      Vieworderdetails() {
+        let url = `order?categoryId=${this.categoryId}&tuanId=${this.tuanId}&activityId=${this.activityId}`;
+        wepy.redirectTo({
+          url: url
+        });
+      }
+    }
+    getinformation() {
+      let me = this;
+      wepy.request({
+        url: `${this.$parent.APIServer}/guide/tuan/${me.tuanId}`,
+        method: 'GET',
+        header: {
+          'accessToken': me.$parent.globalData.accessToken
+        },
+        success(data) {
+          let result = data.data.data;
+          me.images = JSON.parse(result.activity.properties).filePaths[0];
+          me.userLimit = JSON.parse(result.activity.properties).userLimit - result.userCount;
+          me.groupimage = result.tuanUser;
+          me.startTime = formatDate(result.startTime, 'Y-m-d H:i');
+          // .reverse()
+          me.productname = result.activity.name;
+          me.status = result.status;
+          me.address = JSON.parse(result.address);
+          me.$apply();
+        }
+      });
+    };
+    onShareAppMessage(res) {
+      let me = this;
+      return {
+        title: `（团购活动）好东东就要分享! ${me.productname}`,
+        imageUrl: me.images,
+        path: `/pages/eventDetails?categoryId=${me.categoryId}&activityId=${me.activityId}`,
+        success: function(res) {
+          wepy.showToast({
+            title: '分享成功',
+            icon: 'success',
+            duration: 1000
+          });
+        },
+        fail: function(res) {
+          wepy.showToast({
+            title: '分享失败',
+            image: '../assets/img/toast-icon.png',
+            duration: 1000
+          });
+        }
+      };
+    };
+    onLoad(options) {
+      this.activityId = options.activityId;
+      this.categoryId = options.categoryId;
+      this.tuanId = options.tuanId;
+      this.getinformation();
+      this.$apply();
+    }
+  }
+</script>

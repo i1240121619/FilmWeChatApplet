@@ -1,0 +1,88 @@
+<style>
+  .Atitle {
+    font-weight: 700;
+    font-size: 42rpx;
+    text-align: center;
+    padding: 50rpx 0 10rpx 0;
+  }
+    .content {
+    color: #7b7b7b;
+    padding: 30rpx;
+    line-height: 1.8;
+  }
+   .subTitle {
+    font-weight: 700;
+    font-size: 32rpx;
+    color: #000;
+  }
+  .indent{
+    text-indent:2em;
+  }
+</style>
+
+<template>
+  <view class="Atitle">活动规则</view>
+  <view class="content">
+    <view >
+      <view class="subTitle">一、定价秒降杀规则：</view>
+      <view class="indent">
+        1 ) 在限定的时间内竞价标的的竞价由高到低依次递减直到第一个竞价人应价（达到或超过底价）时击槌成交的一种竞价交易。
+      </view>
+      <view class="indent">
+        2 ) 原价：从什么价格开始降。一般为立即购买的价格。
+        底价：最低能降到的底价。客户出价必须大于等于底价才能成交。
+        活动截止日期：发布结束的日期。
+        消费截止日期：服务型活动的到店消费截止日期。
+      </view>
+      <view class="indent">
+        3 ) 竞价者可1元预订一个购买价格。可多次出价定价。出价不退款。
+      </view>
+      <view class="indent">
+        4 ) 在价格降到竞价者预订价格时，我们通过绑定的公众服务号提醒中标者。中标人有5分钟时间付款。在限定时间内未完成付款，价格继续下降直到降到下一位竞买者。
+      </view>
+      <view class="indent">
+        5 ) 竞价中标原则：先按价格由高至低，然后时间先后顺序直至竞价结束。
+      </view>
+      <view class="indent">
+        6 ) 在王牌推手确认收到物品或消费服务后，我们会放款给发布者；或中标人在消费或收货后第7个工作日仍然没有确认，付款将自动转与商家。
+      </view>
+      <view class="indent">
+        7 ) 如果是购得实物，请与发布人直接联系物流。
+      </view>
+    </view>
+    <view >
+      <view class="subTitle">二、竞价全付杀规则：</view>
+      <view class="indent">
+        1 ) 活动截止日期：发布结束的日期。
+          消费截止日期：服务型活动的到店消费截止日期。
+      </view>
+      <view class="indent">
+        2 ) 价高者得。
+      </view>
+      <view class="indent">
+        3 ) 如果所有竞标出价总和（最终价）小于标价，最终价可作为物品或服务的等值折扣使用。
+      </view>
+      <view class="indent">
+        4 ) 不论最后谁中标，所有的投标人付出的投标出价不退还。
+      </view>
+      <view class="indent">
+        5 ) 如果大于物品或服务价值，超出部分按人均相应比例退还至我的余额。
+      </view>
+      <view class="indent">
+        6 ) 在王牌推手确认收到物品或消费服务后，我们会放款给发布者；或中标人在消费或收货后第7个工作日仍然没有确认，付款将自动转与商家。
+      </view>
+      <view class="indent">
+        7 ) 如果是购得实物，请与发布人直接联系物流。
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '活动规则'
+    };
+  }
+</script>

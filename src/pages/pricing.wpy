@@ -1,0 +1,65 @@
+<style>
+  ._content {
+    margin: 20rpx;
+  }
+  ._input {
+    border: 1px solid #ddd;
+    margin: 20px 0;
+    /*padding-left: 10px;*/
+    border-radius: 4px;
+    background: #fff;
+    padding: 20rpx;
+  }
+</style>
+
+<template>
+  <view class="_content">
+    <input  type="number" class="_input" value="{{prices}}"/>
+    <button type="primary" size="default" @tap="specify" class="OA-btn"> 定价 </button>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  export default class Index extends wepy.page {
+    data = {
+      postData: '',
+      prices: 0
+    };
+    methods = {
+      specify() {
+        let properties = {
+          specify_price: this.prices
+        };
+        this.postData.properties = JSON.stringify(properties);
+        this.$apply();
+        wepy.request({
+          url: `${this.$parent.APIServer}/guide/order/specify`,
+          method: 'POST',
+          header: {
+            'accessToken': this.$parent.globalData.accessToken
+          },
+          data: this.postData,
+          success: function (data) {
+            let result = data.data.data;
+            if (result) {
+              wepy.showToast({
+                title: `定价成功！`,
+                duration: 2000
+              });
+              setTimeout(function () {
+                wepy.navigateBack({
+                  delta: 1
+                });
+              }, 1000);
+            }
+          }
+        });
+      }
+    };
+    onLoad(options) {
+      this.postData = JSON.parse(options.postData);
+      this.$apply();
+    }
+  }
+</script>

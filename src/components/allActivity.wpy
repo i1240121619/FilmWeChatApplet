@@ -1,0 +1,335 @@
+<style>
+  .activityList{
+    padding: 20rpx;
+    padding-bottom: 120rpx;
+    background: #ffffff;
+  }
+  /*add */
+  .scroll-bar{
+    height: 88rpx;
+    line-height: 88rpx;
+    background-color: #fff;
+    white-space: nowrap;
+  }
+  .scroll-bar .block{
+    text-align: center;
+    display: inline-block;
+    color: #83838f;
+    font-size: 30rpx;
+    height: 100%;
+    padding: 0 45rpx;
+    position: relative;
+  }
+  .scroll-bar ._active{
+    color: #e01234;
+    font-weight: bold;
+    font-size: 32rpx;
+  }
+  .scroll-bar ._active:after{
+    content: "";
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 6rpx;
+    background: #e01234;
+  }
+  .flex-content{
+    display: flex;
+    justify-content: space-between;
+    /*border-top: solid 1px #eaeaee;*/
+  }
+  /*.flex-content:first-child{
+    border-top: none;
+  }*/
+  .flex-left{
+    /*flex-grow: 1;*/
+    width: 15%;
+    padding-right: 20rpx;
+    box-sizing: border-box;
+  }
+  .user-avatar{
+    margin-top: 20rpx;
+    width: 100%;
+    height: 44px;
+    border-radius: 50%;
+    background-color: #ebebf1;
+    background-size: cover;
+  }
+  .flex-right{
+    /*flex-grow: 4;*/
+    width: 85%;
+    border-bottom: solid 1px #eaeaee;
+  }
+  .list-title{
+    font-size: 32rpx;
+    padding: 40rpx 0 20rpx;
+  }
+  .list-des{
+    color: #7b7b7b;
+    margin-bottom: 20rpx;
+    display: block;
+  }
+  .list-footer{
+    padding: 20rpx 0;
+    color: #bababf;
+    display: flex;
+    justify-content: space-between;
+  }
+  .img{
+    background-color: #ebebf1;
+    width: 100%;
+    height: 120px;
+  }
+  .menu{
+    width: 100%;
+    background-color: rgba(226,226,224,0.3);
+    padding: 25rpx;
+    box-sizing: border-box;
+  }
+  .menu .menu-name{
+    padding: 10rpx 25rpx;
+    display: inline-block;
+  }
+  .menu ._active{
+    background-color: #e01234;
+    color: #fff;
+    border-radius: 4px;
+  }
+  .list-item-img{
+    position: relative;
+    width: 100%;
+    background: #ffffff;
+    overflow: hidden;
+  }
+  .good-status{
+    position: absolute;
+    width: 190rpx;
+    height: 60rpx;
+    right: -47rpx;
+    top: 17rpx;
+    color: #fff;
+    transform: rotate(45deg);
+    line-height: 60rpx;
+    font-size: 28rpx;
+    text-align: center;
+  }
+  .good-status-loading{
+    background-color: #d7152e;
+  }
+  .good-status-over{
+    background-color: #969696;
+  }
+  /*.itme-img-icon{
+    position: absolute;
+    right: 0;
+    top:0;
+    width: 140rpx;
+    height: 140rpx;
+  }*/
+  .item-img{
+    width: 100%;
+    height: 100%;
+  }
+</style>
+<template>
+  <view>
+    <view class="all">
+      <scroll-view scroll-x class="scroll-bar">
+        <block wx:for='{{categoryList}}' wx:key='{{index}}'>
+          <view class="block {{index == categoryIndex ? '_active' : ''}}" data-index='{{index}}' @tap="chooseMenu({{item.children}}, {{item.id}})">
+            {{item.name}}
+          </view>
+        </block>
+      </scroll-view>
+      <view class="menu" hidden='{{menuShow}}'>
+        <view class="menu-name {{menuIndex == 0 ? '_active' : ''}}" data-index="0" @tap='chooseCategory({{allCategoryId}})'>全部</view>
+        <block wx:for-items='{{menu}}' wx:key='{{index}}'>
+          <view data-index='{{index + 1}}' class="menu-name {{index + 1 == menuIndex ? '_active' : ''}}" @tap='chooseCategory({{item.id}})'>{{item.name}}</view>
+        </block>
+      </view>
+      <view class="activityList">
+        <block wx:if="{{productCategoryList.length > 0}}">
+          <view class="flex-content" wx:for='{{productCategoryList}}' wx:key='{{index}}'>
+            <view class="flex-left">
+              <image class="user-avatar" src='{{item.avatar}}'></image>
+            </view>
+            <view class="flex-right">
+              <view class="list-title">{{item.name}}</view>
+              <text class="list-des">{{item.description}}</text>
+              <navigator url='eventDetails?categoryId={{item.categoryId}}&activityId={{item.activityId}}'>
+                <view class="list-item-img">
+                  <view class="good-status {{item.statusClass}}">{{item.statusText}}</view>
+                  <!-- <view class="itme-img-icon" wx:if="{{item.status == 2}}"><image class='item-img' src='../assets/img/jxz.png'></image></view>
+                  <view class="itme-img-icon" wx:if="{{item.status == 4}}"><image class='item-img' src='../assets/img/ydj.png'></image></view>
+                  <view class="itme-img-icon" wx:if="{{item.status == 3}}"><image class='item-img' src='../assets/img/ysq.png'></image></view>
+                  <view class="itme-img-icon" wx:if="{{item.status == 5}}"><image class='item-img' src='../assets/img/ysq.png'></image></view> -->
+                  <image class="img" src="{{item.img}}" mode="aspectFit"></image>
+                </view>
+              </navigator>
+              <view class="list-footer">
+                <text>{{item.categoryValue}}</text>
+                <text>{{item.createTime}}</text>
+              </view>
+            </view>
+          </view>
+        </block>
+        <loading :loadingType.sync='loadingType' />
+      </view>
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy';
+  import loading from '../components/loading';
+  import {formatDate} from '../common/date';
+  export default class allActivity extends wepy.component {
+    config = {
+      navigationBarTitleText: '活动列表'
+    };
+    data = {
+      categoryId: '',
+      allCategoryId: '',
+      menuIndex: 0,
+      categoryIndex: 0,
+      loadingType: 1,
+      activityList: [],
+      categoryList: [],
+      menu: [],
+      menuShow: true,
+      productCategoryList: [],
+      pageNo: 1,
+      pageSize: 6,
+      isOver: 0
+    };
+    components = {
+      loading
+    };
+    watch = {
+      menu() {
+        this.menuShow = !this.menu.length;
+      }
+    };
+    methods = {
+      chooseMenu(item, productCategoryId, event) {
+        this.menu = item;
+        this.categoryIndex = event.currentTarget.dataset.index;
+        this.menuIndex = 0;
+        this.allCategoryId = productCategoryId;
+        this.categoryId = this.allCategoryId;
+        this.customOnLoad(this.categoryId);
+      },
+      chooseCategory(productCategoryId, event) {
+        this.menuIndex = event.currentTarget.dataset.index;
+        this.categoryId = productCategoryId;
+        this.customOnLoad(this.categoryId);
+      },
+      onPullDownRefresh() {
+        this.customOnLoad(this.categoryId);
+      },
+      onReachBottom() {
+        let me = this;
+        me.loadingType = 1;
+        me.getData(this.categoryId);
+      }
+    };
+    getData(productCategoryId) {
+      let me = this;
+      if (me.isOver) {
+        me.loadingType = 3;
+      }
+      wepy.request({
+        url: `${this.$parent.$parent.APIServer}/guide/activity/list`,
+        method: 'POST',
+        header: {
+          'accessToken': this.$parent.$parent.globalData.accessToken
+        },
+        data: {
+          productCategoryId: productCategoryId,
+          page: {
+            pageNo: me.pageNo,
+            pageSize: me.pageSize
+          }
+        },
+        success: function(data) {
+          me.loadingType = 0;
+          me.pageNo += 1;
+          let result = data.data.data.list;
+          if (result.length) {
+            if (result.length < me.pageSize) {
+              me.isOver = 1;
+              me.loadingType = 3;
+            }
+            result.forEach(function(item, index) {
+              if (item.id) {
+                let obj = {};
+                obj.status = item.status;
+                obj.description = item.description;
+                obj.name = item.name;
+                obj.img = JSON.parse(item.properties).filePaths[0];
+                obj.categoryValue = item.categoryValue;
+                obj.categoryId = item.categoryId;
+                obj.activityId = item.activityProducts[0].activityId;
+                obj.userId = item.userId;
+                obj.avatar = item.avatar;
+                obj.createTime = formatDate(item.createTime, 'Y-m-d H:i:s');
+                me.productCategoryList.push(obj);
+                if (item.status === 2) {
+                  if (!item.activityProducts[0].quantity) {
+                    obj.statusText = '已冻结';
+                    obj.statusClass = 'good-status-over';
+                  } else {
+                    obj.statusText = '进行中';
+                    obj.statusClass = 'good-status-loading';
+                  }
+                } else if (item.status === 3) {
+                  obj.statusText = '已售罄';
+                  obj.statusClass = 'good-status-over';
+                } else if (item.status === 5) {
+                  obj.statusText = '已结束';
+                  obj.statusClass = 'good-status-over';
+                }
+              }
+            });
+          } else {
+            me.loadingType = 2;
+          }
+          me.$apply();
+        }
+      });
+    };
+    customOnLoad(productCategoryId) {
+      let me = this;
+      me.productCategoryList = [];
+      me.pageNo = 1;
+      me.isOver = 0;
+      me.loadingType = 1;
+      me.categoryId = productCategoryId;
+      me.getData(me.categoryId);
+    };
+    getCategory() {
+      let me = this;
+      me.categoryIndex = 0;
+      me.menuIndex = 0;
+      wepy.request({
+        url: `${me.$parent.$parent.APIServer}/guide/category/2`,
+        header: {
+          'accessToken': me.$parent.$parent.globalData.accessToken
+        },
+        success: function(res) {
+          me.categoryList = res.data.data;
+          me.menu = me.categoryList[0].children;
+          me.categoryId = me.categoryList[0].id;
+          me.allCategoryId = me.categoryId;
+          me.customOnLoad(me.categoryId);
+        }
+      });
+    };
+    onLoad() {
+      wepy.showShareMenu({
+        withShareTicket: true
+      });
+    }
+  }
+</script>

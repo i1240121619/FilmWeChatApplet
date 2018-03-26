@@ -1,0 +1,372 @@
+<style>
+.content{
+  padding: 0 20rpx;
+  position: relative;
+  padding-bottom: 58px;
+}
+.flex-content{
+  display: flex;
+  justify-content: space-between;
+}
+.flex-content:first-child{
+  /*border-top: none;*/
+}
+.flex-left{
+  /*flex-grow: 1;*/
+  width: 15%;
+  padding-right: 20rpx;
+  box-sizing: border-box;
+}
+.userinfo-avatar{
+  margin-top: 20rpx;
+  width: 100%;
+  height: 44px;
+  border-radius: 50%;
+  background-color: #ebebf1;
+  background-size: cover;
+}
+.flex-right{
+  /*flex-grow: 4;*/
+  width: 85%;
+  border-bottom: solid 1px #eaeaee;
+}
+.list-title{
+  font-size: 32rpx;
+  padding: 40rpx 0 20rpx;
+}
+.list-des{
+  margin-bottom: 12px;
+  display: block;
+  color: #7b7b7b;
+}
+.list-footer{
+  padding: 20rpx 0;
+  color: #bababf;
+}
+.delete{
+  color: #E01234;
+  display: inline-block;
+  margin-left: 20rpx;
+}
+.flex-bottom{
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  text-align: center;
+  border-top: solid 1px #dad9d6;
+  background-color: #fff;
+}
+.btn-success{
+  background-color: #1AAD19;
+  color: #fff;
+  margin: 20rpx;
+}
+button[disabled] {
+  color: #fff;
+  background-color: #83838f;
+}
+.loading{
+  font-size: 14px;
+  height: 20px;
+  padding: 50rpx 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.text{
+  color: #999;
+  display: block;
+}
+/**/
+.img{
+  background-color: #ebebf1;
+  width: 100%;
+  height: 120px;
+}
+.list-item-img{
+  position: relative;
+  width: 100%;
+  background: #ffffff;
+  overflow: hidden;
+  }
+.good-status{
+  position: absolute;
+  width: 190rpx;
+  height: 60rpx;
+  right: -47rpx;
+  top: 17rpx;
+  color: #fff;
+  transform: rotate(45deg);
+  line-height: 60rpx;
+  font-size: 28rpx;
+  text-align: center;
+  }
+.good-status-loading{
+  background-color: #d7152e;
+}
+.good-status-over{
+  background-color: #969696;
+}
+</style>
+<template>
+  <view class="content">
+    <block wx:for='{{actList}}' wx:key='{{index}}'>
+      <view class="flex-content">
+        <view class="flex-left">
+          <image class="userinfo-avatar" src='{{item.avatar}}'></image>
+        </view>
+        <view url='eventDetails?categoryId={{item.categoryId}}&activityId={{item.activityId}}' class="flex-right">
+          <view class="list-title">{{item.name}}</view>
+          <text class="list-des">{{item.description}}</text>
+          <navigator url='eventDetails?categoryId={{item.categoryId}}&activityId={{item.activityId}}' >
+            <view class="list-item-img">
+              <view class="good-status {{item.statusClass}}">{{item.statusText}}</view>
+              <image class="img" src="{{item.img}}" mode="aspectFit"></image>
+            </view>
+          </navigator>
+          <view class="list-footer">
+            <text>{{item.categoryValue}}</text>
+            <view class="delete" wx:if='{{userId == item.userId}}' @tap="confirmRemove({{item.activityId}})">移除</view>
+          </view>
+        </view>
+      </view>
+    </block>
+    <loading :loadingType.sync='loadingType' />
+  </view>
+  <view class="flex-bottom"><button type="success" size="default" class="btn-success" @tap="add" disabled="{{btnDisabled}}">我也要卖</button></view>
+  <alert />
+</template>
+<script>
+  import wepy from 'wepy';
+  import loading from '../components/loading';
+  import alert from '../components/alert';
+  export default class themeActList extends wepy.page {
+    data = {
+      themeId: '',
+      loading: {
+        text: '',
+        pic: ''
+      },
+      title: '',
+      imageUrl: '',
+      actList: [],
+      loadingType: 1,
+      userId: '',
+      overLimit: '',
+      hasJoined: '',
+      btnDisabled: false
+    };
+    components = {
+      loading,
+      alert
+    };
+    computed = {
+      btnDisabled() {
+        return this.overLimit || this.hasJoined;
+      }
+    };
+    methods = {
+      add() {
+        let me = this;
+        wepy.request({
+          url: `${this.$parent.APIServer}/guide/theme/${me.themeId}`,
+          method: 'GET',
+          header: {
+            'accessToken': me.$parent.globalData.accessToken
+          },
+          success: function(data) {
+            let result = data.data.data;
+            me.overLimit = !(result.activityList.length < me.activityLimit);
+            me.$apply();
+            if (me.hasJoined) {
+              me.$invoke('alert', 'alertFun', '您已经添加了一个活动');
+              return;
+            }
+            if (me.overLimit) {
+              me.$invoke('alert', 'alertFun', '活动已满');
+              return;
+            }
+            wepy.navigateTo({
+              url: `category?themeId=${me.themeId}&source=theme`
+            });
+          }
+        });
+      },
+      confirmRemove(id) {
+        let me = this;
+        let activityId = id;
+        wepy.showModal({
+          title: '确认移除 ？',
+          content: '活动从此主题移除',
+          success: function(res) {
+            if (res.confirm) {
+              me.remove(activityId);
+            } else if (res.cancel) {
+            }
+          }
+        });
+      }
+    };
+    remove(id) {
+      let me = this;
+      wepy.request({
+          url: `${this.$parent.APIServer}/guide/theme/remove`,
+          method: 'POST',
+          header: {
+            'accessToken': me.$parent.globalData.accessToken
+          },
+          data: {
+            themeId: me.themeId,
+            activityId: id
+          },
+          success: function(res) {
+            if (res.data) {
+              wepy.showToast({
+                title: '移除成功',
+                icon: 'success',
+                duration: 2000
+              });
+            } else {
+              wepy.showToast({
+                title: res.error,
+                image: '../assets/img/toast-icon.png',
+                duration: 2000
+              });
+            }
+            me.customOnLoad();
+          },
+          fail: function() {
+            wepy.showToast({
+              title: '移除失败',
+              image: '../assets/img/toast-icon.png',
+              duration: 2000
+            });
+          }
+        });
+    };
+    getActList() {
+      let me = this;
+      wepy.request({
+        url: `${me.$parent.APIServer}/guide/theme/${me.themeId}`,
+        method: 'GET',
+        header: {
+          'accessToken': me.$parent.globalData.accessToken
+        },
+        success: function(data) {
+          let result = data.data.data;
+          me.hasJoined = result.hasJoined;
+          me.activityLimit = result.activityLimit;
+          me.dealData(result);
+        }
+      });
+    };
+    getUserInfoData() {
+      let me = this;
+      if (me.$parent.globalData.accessToken) {
+        me.customOnLoad();
+        return;
+      };
+      wepy.login({
+        success: function(res) {
+          if (res.code) {
+            wepy.request({
+              url: `${me.$parent.APIServer}/guide/user`,
+              data: {jscode: res.code},
+              success: function (data) {
+                let result = data.data.data;
+                me.$parent.globalData['accessToken'] = result.accessToken;
+                me.$parent.globalData['userid'] = result.user.id;
+                me.$parent.globalData['openId'] = result.user.openId;
+                me.$parent.globalData['weixinInfo'] = result.user.weixinInfo;
+                me.customOnLoad();
+              }
+            });
+          } else {
+            wepy.showModal({
+              title: '获取用户登录态失败！',
+              showCancel: false,
+              content: res.errMsg
+            });
+          }
+        }
+      });
+    };
+    dealData(result) {
+      let me = this;
+      if (result) {
+        me.title = result.title;
+        wepy.setNavigationBarTitle({
+          title: me.title
+        });
+        if (result.activityList.length) {
+          result.activityList.forEach(function(item, index) {
+            if (item.id) {
+              let obj = {};
+              obj.description = item.description;
+              obj.name = item.name;
+              obj.img = JSON.parse(item.properties).filePaths[0];
+              obj.categoryValue = item.categoryValue;
+              obj.categoryId = item.categoryId;
+              obj.activityId = item.activityProducts[0].activityId;
+              obj.userId = item.userId;
+              obj.avatar = item.avatar;
+              switch (item.status) {
+                  case 2: obj.statusText = '进行中';
+                          obj.statusClass = 'good-status-loading';
+                          break;
+                  case 3: obj.statusText = '已售罄';
+                          obj.statusClass = 'good-status-over';
+                          break;
+                  case 4: obj.statusText = '已冻结';
+                          obj.statusClass = 'good-status-over';
+                          break;
+                  case 5: obj.statusText = '已结束';
+                          obj.statusClass = 'good-status-over';
+                          break;
+                }
+              me.actList.push(obj);
+            }
+          });
+          me.loadingType = 3;
+        } else {
+          me.loadingType = 2;
+        }
+      }
+      me.$apply();
+    };
+    customOnLoad() {
+      let me = this;
+      me.actList = [];
+      me.loadingType = 1;
+      me.getActList();
+    };
+    onShareAppMessage(res) {
+      let me = this;
+      me.imageUrl = me.actList[0].img || 'http://upload.ouliu.net/i/201712291020422f2wp.jpeg';
+      return {
+        title: `${me.title}`,
+        imageUrl: me.imageUrl,
+        path: `/pages/themeList?themeId=${me.themeId}`,
+        success: function(res) {
+          wepy.showToast({
+            title: '分享成功',
+            icon: 'success',
+            duration: 1000
+          });
+        },
+        fail: function(res) {
+          wepy.showToast({
+            title: '分享失败',
+            image: '../assets/img/toast-icon.png',
+            duration: 1000
+          });
+        }
+      };
+    };
+    onLoad(option) {
+      this.themeId = option.themeId;
+      this.userId = this.$parent.globalData.userid;
+      this.getUserInfoData();
+    };
+  }
+</script>

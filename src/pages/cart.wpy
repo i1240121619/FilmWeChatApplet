@@ -1,0 +1,390 @@
+<style>
+  .lb{
+    padding-bottom: 100rpx;
+  }
+  .lb-item{
+    display:flex;
+    flex: 1;
+    width: 100%;
+    height: 220rpx;
+    border-bottom: 1px solid #e5e5e5;
+    background: #fff;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20rpx;
+  }
+  .icon-check{
+    margin: 0 25rpx;
+
+  }
+  .icon-check:before{
+    align-items: center;
+    justify-content:center;
+  }
+  .check-h:before {
+    color: #1AAD19;
+    font-size: 45rpx;
+    font-family:"iconfont" !important;
+    content: "\e616";
+
+  }
+  .check{
+    border: 1px solid #C9C9C9;
+    border-radius: 50%;
+    width: 40rpx;
+    height:40rpx;
+  }
+  .pic{
+    width: 140rpx;
+    max-height:180rpx;
+    border: 1px solid #e5e5e5;
+    padding:1px;
+    overflow: hidden;
+  }
+  .pic image{
+    box-sizing: border-box;
+    width: 100%;
+  }
+  .mid{
+    flex: 1;
+    padding-left:20rpx;
+  }
+  .name{
+    display: block;
+    height: 70rpx;
+    overflow: hidden;
+  }
+  .mid .jj{
+    width:195rpx;
+    height: 50rpx;
+    margin-top: 30rpx;
+    border: 1px solid #dcdcdc;
+    border-radius: 2px;
+
+  }
+
+  .mid .jj .jian{
+    display: block;
+    text-align: center;
+    line-height: 47rpx;
+    width:60rpx;
+    font-size: 50rpx;
+    float: left;
+  }
+
+ .mid .jj .num{
+    display: block;
+    float: left;
+    text-align: center;
+    line-height: 38rpx;
+    width: 70rpx;
+    font-size: 30rpx;
+    border-left: 1px solid #dcdcdc;
+    border-right: 1px solid #dcdcdc;
+  }
+
+  .mid .jj .jia{
+    display: block;
+    text-align: center;
+    line-height: 47rpx;
+    width:60rpx;
+    font-size: 45rpx;
+    float: right;
+  }
+  .jgq{
+    width: 165rpx;
+    font-size: 30rpx;
+    padding-right: 30rpx;
+
+  }
+  .pri{
+    font-size: 35rpx;
+  }
+  .pri1{
+    font-size: 30rpx;
+    text-decoration:line-through;
+  }
+  .price{
+    text-align: right;
+    font-weight: bold;
+    color: #e90327;
+  }
+  .price_de{
+    text-align: right;
+    font-weight: bold;
+    color: #ccc;
+  }
+  .del{
+    padding-top: 30rpx;
+    height: 50rpx;
+    text-align: right;
+  }
+  .del:before {
+    color: #888;
+    font-size: 45rpx;
+    font-family:"iconfont" !important;
+    content: "\e69d";
+  }
+  .fix_bottom{
+    width: 100%;
+    height: 100rpx;
+    background: #fff;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    display:flex;
+    align-items: center;
+    padding:0 20rpx;
+    z-index: 2;
+  }
+  .fix_bottom_2{
+    font-size: 33rpx;
+    padding-left: 15rpx;
+
+  }
+  .fix_bottom_0{
+    display:flex;
+    align-items: center;
+  }
+  .fix_bottom_3{
+    font-size: 33rpx;
+    padding-left: 15rpx;
+    flex: 1;
+  }
+  #zj{
+    font-weight: bold;
+    color: #e90327;
+  }
+  #js{
+    font-size: 35rpx;
+    width: 250rpx;
+    background: #e90327;
+    height: 100%;
+    text-align: center;
+    line-height:100rpx;
+    color: #fff;
+    font-weight: bold;
+  }
+
+</style>
+
+<template>
+  <view class="lb">
+    <block wx:for="{{list}}" wx:key="index">
+      <view class="lb-item">
+        <view class="{{item.selected ? 'icon-check check-h':'icon-check check'}}" @tap="check({{index}})"></view>
+        <view class="pic"><image src="{{item.Thumbnails}}" mode="widthFix"></image></view>
+        <view class="mid">
+          <span class="name">{{item.name}}{{a}}</span>
+          <view class="jj">
+            <span class="jian" @tap="reduce({{index}})">-</span>
+            <input disabled="disabled" class="num" value="{{item.quantity}}" />
+            <span class="jia" @tap="add({{index}}))">+</span>
+          </view>
+        </view>
+        <view class="jgq">
+          <view class="price"><p>￥<span class="pri">{{item.salePrice}}</span></p></view>
+          <view class="price_de"><p><span class="pri1">￥{{item.marketPrice}}</span></p></view>
+          <view class="del" @tap="del({{index}}))"></view>
+        </view>
+      </view>
+    </block>
+  </view>
+  <view class="fix_bottom">
+    <view  class="fix_bottom_0" @tap="allSelect()">
+      <view class="{{isAllSelect ? 'fix_bottom_1 check-h':'fix_bottom_1 check'}}"></view>
+      <view class="fix_bottom_2">全选</view>
+    </view>
+    <view class="fix_bottom_3"><view>合计:<span id="zj">￥{{price}}</span></view></view>
+    <view id="js" @tap="balance()">结算</view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '购物车'
+    };
+    data = {
+      list: '',
+      isAllSelect: 0,
+      price: 0,
+      most: 20
+    };
+    methods = {
+      allSelect() {
+        if (this.isAllSelect) {
+          this.list.forEach(function (item, index) {
+            item.selected = 0;
+          });
+        } else {
+          this.list.forEach(function (item, index) {
+            item.selected = 1;
+          });
+        }
+      },
+      check(a) {
+        this.list[a].selected = !this.list[a].selected;
+      },
+      add(a) {
+        let me = this;
+        if (this.list[a].quantity < this.most) {
+          wepy.request({
+            url: `${this.$parent.APIServer}/guide/cart/${this.list[a].id}`,
+            method: 'PUT',
+            header: {
+              'accessToken': this.$parent.globalData.accessToken
+            },
+            data: {
+              quantity: this.list[a].quantity + 1
+            },
+            success(data) {
+              if (data) {
+                me.list[a].quantity = me.list[a].quantity + 1;
+                me.$apply();
+              } else {
+                wepy.showToast({title: '加商品失败！', image: '../assets/img/toast-icon.png', mask: 1, duration: 2000});
+              }
+            }
+          });
+        } else {
+          wepy.showToast({title: '最多添加20个', image: '../assets/img/toast-icon.png', mask: 1, duration: 2000});
+        }
+      },
+      reduce(a) {
+        let me = this;
+        if (this.list[a].quantity > 1) {
+          wepy.request({
+            url: `${this.$parent.APIServer}/guide/cart/${this.list[a].id}`,
+            method: 'PUT',
+            header: {
+              'accessToken': this.$parent.globalData.accessToken
+            },
+            data: {
+              quantity: this.list[a].quantity - 1
+            },
+            success(data) {
+              if (data) {
+                me.list[a].quantity = me.list[a].quantity - 1;
+                me.$apply();
+              } else {
+                wepy.showToast({title: '减商品失败！', image: '../assets/img/toast-icon.png', mask: 1, duration: 2000});
+              }
+            }
+          });
+        } else {
+          wepy.showToast({title: '只有一个了', image: '../assets/img/toast-icon.png', mask: 1, duration: 2000});
+        }
+      },
+      del(a) {
+        let me = this;
+        wepy.request({
+          url: `${this.$parent.APIServer}/guide/cart/${this.list[a].id}`,
+          method: 'DELETE',
+          header: {
+            'accessToken': this.$parent.globalData.accessToken
+          },
+          success(data) {
+            if (data) {
+              me.list.splice(a, 1);
+              me.$apply();
+            } else {
+              wepy.showToast({title: '删除失败！', image: '../assets/img/toast-icon.png', mask: 1, duration: 2000});
+            }
+          }
+        });
+      },
+      balance() {
+        let a = 0;
+        for (let i = 0; i < this.list.length; i++) {
+          a += this.list[i].selected;
+        }
+        if (!a) {
+          wepy.showToast({title: '没有选择商品', image: '../assets/img/toast-icon.png', mask: 1, duration: 2000});
+          return;
+        }
+        this.Submit();
+      }
+    };
+    Submit() {
+      let list = [];
+      for (let i = 0; i < this.list.length; i++) {
+        if (this.list[i].selected) {
+            list.push(this.list[i]);
+        }
+      }
+      let data = {
+        dataArr: list,
+        activityId: 0
+      };
+      this.$parent.globalData.orders = data;// 保存数据
+      wepy.navigateTo({
+        url: 'orderSure'
+      });
+    }
+    computed = {
+      allPrice() {
+        if (!this.list) return;
+        var price = 0;
+        this.list.forEach(function(item, index) {
+          if (item.selected) {
+            price += item.salePrice * item.quantity;
+          }
+        });
+        this.price = price.toFixed(2);
+      },
+      isAllSelectFun() {
+        if (!this.list) return;
+        let a = 0;
+        for (let i = 0; i < this.list.length; i++) {
+          a += this.list[i].selected;
+        }
+        if (a === this.list.length) {
+          this.isAllSelect = 1;
+        } else {
+          this.isAllSelect = 0;
+        }
+        if (!this.list.length) {
+          this.isAllSelect = 0;
+        }
+        this.$apply();
+      }
+    };
+    onLoad() {
+      let me = this;
+      wepy.request({
+        url: `${this.$parent.APIServer}/guide/cart`,
+        method: 'GET',
+        header: {
+          'accessToken': this.$parent.globalData.accessToken
+        },
+        data: {
+          pageNo: 1,
+          pageSize: 999
+        },
+        success(data) {
+          let result = data.data.data;
+          if (result) {
+            let list = [];
+            result.list.forEach(function (item, index) {
+              let obj = {};
+              obj.selected = 0;
+              obj.quantity = item.quantity;
+              obj.marketPrice = item.product.marketPrice.toFixed(2);
+              obj.salePrice = item.product.salePrice.toFixed(2);
+              obj.Thumbnails = JSON.parse(item.product.properties).Thumbnails;
+              obj.name = item.product.name;
+              obj.productId = item.productId;
+              obj.id = item.id;
+              obj.vendorId = item.product.userId;
+              list.push(obj);
+            });
+            me.list = list;
+            me.$apply();
+          }
+        }
+      });
+    }
+  }
+</script>

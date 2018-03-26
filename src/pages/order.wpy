@@ -1,0 +1,337 @@
+<style>
+ .redcolor{
+   color:#e02e24;
+ }
+ .blackcolor{
+   color:#151516;
+ }
+ .graycolor{
+   color:#58595b;
+ }
+ .astrict{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; 
+ }
+ .astrict_tow{
+  overflow:hidden; 
+  text-overflow:ellipsis;
+  display:-webkit-box; 
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2; 
+ }
+ .order_head{
+   height:200rpx;
+   width: 100%;
+   display: flex;
+   color:#ffffff;
+   background:#e02e24;
+   justify-content:space-between;
+ }
+ .order_head_center{
+   font-size:38rpx;
+   margin-top:20rpx;
+ }
+ .order_head_left{
+   padding:48rpx 0 0 44rpx;
+ }
+ .order_head-top{
+   font-size:32rpx;
+   margin-bottom:20rpx;
+ }
+ .order-img-box{
+   height:118rpx;
+   width:170rpx;
+   padding:41rpx 43rpx 0 0;
+ }
+ .order-img-box image{
+   width:100%;
+   height:100%;
+ }
+ .order-location{
+   height:120rpx;
+   width:100%;
+   display:flex;
+   justify-content: flex-start;
+   border-bottom:16px solid #f2f2f2;
+ }
+ .order-location .icon-map{
+   color:#ff3f56;
+   font-weight:900;
+   font-size:38rpx;
+   padding:44rpx 18rpx 0 18rpx;
+ }
+ .order-location-btm{
+   color:#606163;
+   font-size:30rpx;
+   padding:15rpx 0;
+ }
+ .order-store{
+   display:flex;
+   height:76rpx;
+   justify-content: flex-start;
+   padding-right:23rpx;
+ }
+ .order-store-box{
+   padding: 18rpx 28rpx 18rpx 18rpx;
+ }
+ .order-store-box image{
+   width:40rpx;
+   height:40rpx;
+   background:#ebebf0;
+ }
+ .order-store-right{
+   width:100%;
+   line-height:76rpx;
+   font-weight:600;
+   display:flex;
+   justify-content:space-between;
+ }
+ .order-detail{
+   width:100%;
+   display:flex;
+   justify-content: flex-start;
+   background:#f5f5f5;
+ }
+ .order-detail-box{
+   padding:14rpx;
+   width:200rpx;
+   height:180rpx;
+   margin-right:10rpx;
+ }
+ .order-detail-box image{
+   width:100%;
+   height:100%;
+ }
+ .order-detail-center{
+   width:398rpx;
+   padding-right:10rpx;
+   padding-top:14rpx;
+   height:180rpx;
+   border-bottom:2rpx solid #ededed;
+ }
+ .order-detail-right{
+   padding-top:14rpx;
+   height:180rpx;
+   text-align:right;
+   border-bottom:2rpx solid #ededed;
+ } 
+ .order-detail-right .d-price{
+   font-size:28rpx;
+ }
+ .order-detail-right .price{
+   font-size:24rpx;
+   text-decoration:line-through;
+   line-height:60rpx;
+ }
+ .order-detail-right .number{
+   font-size:24rpx;
+   line-height:60rpx;
+ }
+ .order-detail-titl{
+   color:#151516;
+   font-size:30rpx;
+   line-height:40rpx;
+ }
+ .order-detail-content{
+   color:#a7a7a7;
+   line-height:50rpx;
+ }
+ .mass-detail{
+   background:#f5f5f5;
+   display:flex;
+   justify-content:flex-end;
+ }
+ .mass-detail-box{
+   border:1rpx solid #58595b;
+   border-radius:8rpx;
+   margin:14rpx;
+   padding:14rpx;
+ }
+ .order-charge{
+   padding:24rpx 20rpx;
+   font-size:28rpx;
+   border-bottom:1rpx solid #ededed;
+ }
+ .order-freight{
+   padding:0 18rpx 0 18rpx;
+ }
+ .order-freight-box{
+   padding:38rpx 0;
+   display:flex;
+   justify-content: flex-end;
+ }
+ .invite-Friends{
+   color:#fff;
+   text-align:center;
+   padding:28rpx 0;
+   background:#e02e24;
+   border-radius:8rpx;
+ }
+ .group-key-tow{
+  color:#fff !important;
+  font-size:30rpx;
+  background:#e02e24 !important;
+  text-align:center;
+  border-radius:15rpx;
+  margin-top:20rpx;
+}
+</style>
+
+<template>
+  <view class="order_head">
+    <view class="order_head_left" wx:if="{{status == 1}}">
+       <view class="order_head-top">
+        拼团还未成功
+       </view>
+        <view>
+        让小伙伴都来拼团吧~
+        </view>
+    </view>
+    <view class="order_head_left" wx:if="{{status == 2}}">
+        <view class="order_head_center">
+        拼团成功
+        </view>
+    </view>
+    <!--<view class="order_head_left">
+        <view class="order_head_center">
+        交易成功
+        </view>
+    </view>-->
+    <view class="order_head_left" wx:if="{{status == 3}}">
+        <view class="order_head_center">
+        未成团，退款中
+        </view>
+    </view>
+    <view class="order-img-box">
+        <image src="../assets/img/funnel.png" mode="aspectFit"></image>
+    </view>
+  </view>
+  <view class="order-location">
+    <view class="iconfont icon-map"></view>
+    <view class="order-location-btm">
+      <view><span style="padding:0 32rpx 0 0;">{{address.name}}</span>{{address.phone}}</view>
+      <view style="padding:10rpx 0 0 0" class="astrict"> {{address.city}} {{address.address}} {{address.province}}</view>
+    </view>
+  </view>
+  <view class="order-store">
+    <view class="order-store-right">
+      <view class="blackcolor astrict" style="margin-left:20rpx;"><span class="iconfont icon-more"></span>{{vendorName}}旗舰店</view>
+      <view class="redcolor" wx:if="{{status == 1}}">拼团中</view>
+      <view class="redcolor" wx:if="{{status == 2}}">拼团成功</view>
+      <view class="redcolor" wx:if="{{status == 3}}">拼团失败</view>
+    </view>
+  </view>
+  <view class="order-detail">
+    <view class="order-detail-box">
+      <image src="{{images}}" mode="aspectFit">
+    </view>
+    <view class="order-detail-center">
+      <view class="astrict_tow order-detail-titl">{{productname}}</view>
+   <!--   <view class="astrict order-detail-content">10个装（单果100-130g）</view>  -->
+    </view>
+     <view class="order-detail-right">
+      <view class="d-price redcolor"><span>￥</span>{{floorPrice}}</view>
+      <view class="graycolor  price"><span>￥</span>{{salePrice}}</view>
+      <view class="number"><span>×</span>{{quantity}}</view>
+    </view>
+  </view>
+  <view class="mass-detail">
+    <view class="mass-detail-box graycolor" @tap="Seedetails()">查看团详情</view>
+  </view>
+  <view class="graycolor order-charge ">
+    使用团长免单卷
+  </view>
+  <view class="order-freight">
+    <view class="graycolor order-freight-box" >
+      实付：<span class="redcolor">￥{{floorPrice}}</span><span>(免运费)</span>
+    </view>
+    <button wx:if="{{status == 1}}" class="group-key-tow" type="default" open-type="share" >邀请好友参团</button>
+    <view class="invite-Friends" wx:if="{{status == 2}}">
+      拼团成功
+    </view>
+    <view class="invite-Friends" wx:if="{{status == 3}}" @tap="againGroup">
+      已失效，正在退款
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '我的订单'
+    };
+    data = {
+      activityId: '',
+      categoryId: '',
+      tuanId: '',
+      images: '',
+      address: [],
+      status: '',
+      quantity: '',
+      salePrice: '',
+      floorPrice: '',
+      productname: '',
+      vendorName: ''
+    };
+    methods = {
+      Seedetails() {
+        let url = `groupsuccess?categoryId=${this.categoryId}&tuanId=${this.tuanId}&activityId=${this.activityId}`;
+        wepy.redirectTo({
+        url: url
+      });
+      }
+    };
+    onShareAppMessage(res) {
+      let me = this;
+      return {
+        title: `（团购活动）好东东就要分享! ${me.productname}`,
+        imageUrl: me.images,
+        path: `/pages/eventDetails?categoryId=${me.categoryId}&activityId=${me.activityId}`,
+        success: function(res) {
+          wepy.showToast({
+            title: '分享成功',
+            icon: 'success',
+            duration: 1000
+          });
+        },
+        fail: function(res) {
+          wepy.showToast({
+            title: '分享失败',
+            image: '../assets/img/toast-icon.png',
+            duration: 1000
+          });
+        }
+      };
+    };
+    getorderinformation() {
+      let me = this;
+      wepy.request({
+        url: `${this.$parent.APIServer}/guide/tuan/${me.tuanId}`,
+        method: 'GET',
+        header: {
+          'accessToken': me.$parent.globalData.accessToken
+        },
+        success(data) {
+          let result = data.data.data;
+          me.quantity = 1;
+          me.images = JSON.parse(result.activity.properties).filePaths[0];
+          me.productname = result.activity.name;
+          me.floorPrice = result.activity.products[0].floorPrice;
+          me.salePrice = result.activity.products[0].salePrice;
+          me.vendorName = JSON.parse(result.activity.products[0].properties).vendorName;
+          me.status = result.status;
+          me.address = JSON.parse(result.address);
+          me.$apply();
+        }
+      });
+    };
+    onLoad(options) {
+      this.activityId = options.activityId;
+      this.categoryId = options.categoryId;
+      this.tuanId = options.tuanId;
+      this.getorderinformation();
+    }
+  }
+</script>

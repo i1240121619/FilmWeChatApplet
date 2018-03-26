@@ -1,0 +1,51 @@
+<style>
+  .noData{
+    text-align: center;
+    margin-top: 100rpx;
+    color: #7b7b7b;
+    font-size: 30rpx;
+  }
+  .Atitle {
+    font-weight: 700;
+    font-size: 42rpx;
+    text-align: center;
+    padding: 50rpx 0 10rpx 0;
+  }
+    .content {
+    color: #7b7b7b;
+    padding: 30rpx;
+    line-height: 1.8;
+  }
+   .subTitle {
+    font-weight: 700;
+    font-size: 32rpx;
+    color: #000;
+  }
+  .indent{
+    text-indent:2em;
+  }
+</style>
+
+<template>
+  <!--<view class="noData">暂无内容</view>-->
+  <view class="Atitle">王牌推手怎么玩？收费用吗？</view>
+  <view class="content">
+    <view class="subTitle">一、怎么玩？</view>
+    <view class="indent">
+      王牌推手是一款帮助商户和个人自营销促销的工具。 商户无需开通自己的公众号，只需通过我们的平台就可以做推广和管理客户。 我们提供各种类型的营销促销活动供您发布给您的微信朋友和客户。 在新建活动中，填写活动信息后就可以发布推广。每个活动的规则和玩法不一，详情请参考每个新建活动里的活动规则。
+    </view>
+   <view class="subTitle">二、收费详情</view>
+    <view class="indent">
+      微信支付平台收取0.6%的手续费，加上手续费和托管费共1.5%
+    </view>
+  </view>
+</template>
+
+<script>
+   import wepy from 'wepy';
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '推手玩法'
+    };
+  }
+</script>

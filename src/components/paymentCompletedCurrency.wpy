@@ -1,0 +1,64 @@
+<style>
+  .finish{
+    padding-top: 0rem;
+    text-align: center;
+    font-size: 0;
+  }
+  .finish image{
+    width: 17rem;
+    height: 17rem;
+    display: inline-block;
+  }
+  .finish .h1{
+    font-size: 0.9rem;
+    margin-top: -2.5rem;
+  }
+  .finish .p{
+    font-size: 0.757rem;
+    color: #999;
+    padding: 0.6rem 0;
+  }
+  .finish .aa{
+    width: 4rem;
+    height: 1.5rem;
+    display: inline-block;
+    line-height: 1.5rem;
+    border: 1px solid #00c599;
+    color: #00c599;
+    border-radius: 0.143rem;
+    margin: 0 0.714rem;
+    font-size: 0.857rem;
+  }
+</style>
+<template>
+  <view class="finish">
+    <image src="../assets/img/order-finish.png"/>
+    <view class="h1">支付已完成</view>
+    <view class="p">您已经支付完成，请等待收货喔</view>
+    <view>
+      <view class="aa" @tap="confirm">确认</view>
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy';
+  export default class paymentCompletedCurrency extends wepy.component {
+    data = {
+      categoryId: '',
+      activityId: ''
+    };
+    methods = {
+      confirm() {
+        wepy.navigateTo({
+          url: 'orderList'
+        });
+      }
+    };
+    onLoadFun(optionsStr) {
+      let options = JSON.parse(optionsStr);
+      this.categoryId = options.categoryId;
+      this.activityId = options.activityId;
+      this.$apply();
+    }
+  }
+</script>

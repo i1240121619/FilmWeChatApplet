@@ -1,0 +1,244 @@
+<style>
+  .wx_wrap {
+    min-height: 100%
+  }
+  .wallet {
+    color: #fff;
+    background: #707486;
+    min-height: 100px;
+    text-align: center
+  }
+  .wallet {
+    display: flex;
+    overflow: hidden
+  }
+
+  .wallet .item {
+    display: block;
+    width: 100%;
+    flex: 1
+  }
+
+  .wallet .icon {
+    margin: 33px 0px 30px 0;
+    display: inline-block;
+    vertical-align: middle;
+    width: 40px;
+  }
+  .wallet .icon.yue::before {
+    color: #fff;
+    font-size: 60rpx;
+    font-family:"iconfont" !important;
+    content: "\e6e4";
+  }
+  .wallet .icon.ka::before {
+     color: #fff;
+     font-size: 60rpx;
+     font-family:"iconfont" !important;
+     content: "\e75c";
+  }
+
+  .wallet .info {
+    text-align: left;
+    display: inline-block;
+    vertical-align: middle;
+    color: hsla(0,0%,100%,.7);
+    font-size: 25rpx;
+  }
+
+  .wallet .info .name {
+    color: #fff;
+    font-size: 35rpx
+  }
+
+  .pocket {
+    margin-bottom: 10px;
+    position: relative;
+    background: #fff
+  }
+
+  .pocket:before {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    pointer-events: none;
+    background-color: #fff;
+    height: 1px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2
+  }
+  .pocket .item {
+    position: relative;
+    float: left;
+    width: 33.33%;
+    height: 90px;
+    text-align: center;
+    background: #fff;
+  }
+
+  .pocket .item:before {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    pointer-events: none;
+    background-color: #e5e5e5;
+    height: 1px;
+    left: 0;
+    right: 0;
+    bottom: 0
+  }
+  .pocket .item:after {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    pointer-events: none;
+    background-color: #e5e5e5;
+    width: 1px;
+    top: 0;
+    bottom: 0;
+    right: 0
+  }
+  .pocket .icon {
+    display: block;
+    margin: 0 auto 8px;
+    width: 30px;
+    height: 30px;
+    margin-top: 10px;
+
+  }
+  .pocket .name {
+    margin-bottom: 3px;
+    color: #333;
+    font-size: 14px;
+    line-height: 1;
+  }
+  .pocket .desc {
+    color: #999;
+    font-size: 10px;
+  }
+
+  .icon.icon1::before {
+    color: #f57416;
+    font-size: 60rpx;
+    font-family:"iconfont" !important;
+    content: "\e6e5";
+  }
+  .icon.icon2::before {
+    color: #e4393c;
+    font-size: 60rpx;
+    font-family:"iconfont" !important;
+    content: "\e723";
+  }
+  .icon.icon3::before {
+    color: #f57416;
+    font-size: 60rpx;
+    font-family:"iconfont" !important;
+    content: "\e71c";
+  }
+
+  .LRLayout{
+    margin-top: 25rpx;
+    padding: 25rpx;
+  }
+</style>
+
+<template>
+  <view class="wx_wrap">
+
+    <view class="wallet">
+      <view id="walletItem" class="item" @tap="withdrawals()">
+        <view class="icon yue"></view>
+        <view class="info">
+          <view class="name">余额</view>
+          <view id="walletNum">¥{{yue}}</view>
+        </view>
+      </view>
+      <view id="walletItem" class="item" @tap="managementCard()">
+        <view class="icon ka"></view>
+        <view class="info">
+          <view class="name">银行卡</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="LRLayout">
+      <view class="btns">
+        <button type="primary" @tap="withdrawals()" style="width: 100%"> 提现 </button>
+      </view>
+    </view>
+
+    <view class="LRLayout" style="margin-top: 0">
+      <view class="btns">
+        <button @tap="applicationRecord()" style="width: 100%"> 提现记录 </button>
+      </view>
+    </view>
+
+    <!--<view class="pocket">-->
+      <!--<navigator id="beanItem" class="item">-->
+        <!--<view class="icon icon1"></view>-->
+        <!--<view class="name">积分</view>-->
+        <!--<view class="desc">0积分</view>-->
+      <!--</navigator>-->
+      <!--<navigator id="couponItem" class="item">-->
+        <!--<view class="icon icon2"></view>-->
+        <!--<view class="name">优惠券</view>-->
+        <!--<view class="desc">0张</view>-->
+      <!--</navigator>-->
+      <!--<navigator id="ecardItem" class="item">-->
+        <!--<view class="icon icon3"></view>-->
+        <!--<view class="name">优惠卡</view>-->
+        <!--<view class="desc">0张</view>-->
+      <!--</navigator>-->
+    <!--</view>-->
+
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '我的钱包'
+    };
+    data = {
+      yue: ''
+    };
+    methods = {
+      withdrawals() {
+        this.$parent.globalData.yue = this.yue;
+        wepy.navigateTo({
+          url: `optionBank`
+        });
+      },
+      applicationRecord() {
+        wepy.navigateTo({
+          url: `cashRegister`
+        });
+      },
+      managementCard() {
+        wepy.navigateTo({
+          url: `managementCard`
+        });
+      }
+    };
+    onLoad() {
+      let me = this;
+      wepy.request({
+        url: `${this.$parent.APIServer}/guide/encash/balance`,
+        method: 'GET',
+        header: {
+          'accessToken': this.$parent.globalData.accessToken
+        },
+        success(data) {
+          let result = data.data.data;
+          if (result) {
+            me.yue = result.balance.toFixed(2);
+            me.$apply();
+          }
+        }
+      });
+    }
+  }
+</script>

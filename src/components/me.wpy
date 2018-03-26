@@ -1,0 +1,226 @@
+<style>
+  page, .body{
+    font-family: '\5FAE\8F6F\96C5\9ED1', arial;
+    background-color: #f9fafb;
+    font-size: 13px;
+  }
+  .userinfo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .userinfo-avatar {
+    margin-top: 40rpx;
+    width: 160rpx;
+    height: 160rpx;
+    border-radius: 50%;
+    border: 10rpx solid #fff;
+  }
+  .userinfo-nickname {
+    margin-top: 20rpx;
+    color: #fff;
+    font-size: 40rpx;
+  }
+  .banner {
+    width: 100%;
+    height: 360rpx;
+    background: #E01234;
+  }
+  ._rows {
+    background: #fff;
+    height: 110rpx;
+    width: 100%;
+    border-bottom: 1px solid #e2e2e0;
+    display: flex;
+  }
+  .item_icon {
+    flex: 1;
+    padding: 34rpx 20rpx 30rpx 30rpx;
+    text-align: center;
+  }
+  .item_title {
+    flex: 7;
+    font-size: 32rpx;
+    padding: 35rpx 35rpx 35rpx 0;
+    text-align: left;
+  }
+  .item_right {
+    padding: 30rpx;
+    flex: 1;
+    text-align: right;
+  }
+  .ico:after{
+    color: #666;
+    font-size: 50rpx;
+    font-family:"ts-iconfont" !important;
+  }
+  .pt:after{
+    content: "\e6c0";
+    color:#e01234;
+  }
+</style>
+
+<template>
+  <view style="padding-bottom: 200rpx">
+    <view class="banner">
+      <view class="userinfo" @tap="handleViewTap">
+        <image class="userinfo-avatar" src="{{ weixinInfo.avatarUrl }}" background-size="cover"/>
+        <view class="userinfo-nickname">欢迎你, {{ weixinInfo.nickName }} ~</view>
+      </view>
+    </view>
+    <!--<navigator url="myJoin" hover-class="navigator-hover">-->
+      <!--<view class="_rows" style="margin-top: 40rpx">-->
+        <!--<view class="item_icon">-->
+          <!--<span class="iconfont icon-viewlist" style="color: royalblue;font-size: 40rpx"></span>-->
+        <!--</view>-->
+        <!--<view class="item_title">我参加的</view>-->
+        <!--<view class="item_right">-->
+          <!--<span class="iconfont icon-more" style="font-weight: 700;color: #ABB8CB;"></span>-->
+        <!--</view>-->
+      <!--</view>-->
+    <!--</navigator>-->
+    <navigator url="myTheme" hover-class="navigator-hover">
+      <view class="_rows">
+        <view class="item_icon">
+          <span class="iconfont icon-bags" style="color:red;font-size: 40rpx"></span>
+        </view>
+        <view class="item_title">我的主题</view>
+        <view class="item_right">
+          <span class="iconfont icon-more" style="font-weight: 700;color: #ABB8CB;"></span>
+        </view>
+      </view>
+    </navigator>
+    <navigator url="releaseList" hover-class="navigator-hover">
+      <view class="_rows">
+        <view class="item_icon">
+          <span class="iconfont icon-hot" style="color:red;font-size: 40rpx"></span>
+        </view>
+        <view class="item_title">我发布的</view>
+        <view class="item_right">
+          <span class="iconfont icon-more" style="font-weight: 700;color: #ABB8CB;"></span>
+        </view>
+      </view>
+    </navigator>
+    <navigator url="myWallet" hover-class="navigator-hover">
+      <view class="_rows">
+        <view class="item_icon">
+          <span class="iconfont icon-onepage48" style="color:#49d41c;font-size: 40rpx"></span>
+        </view>
+        <view class="item_title">我的钱包</view>
+        <view class="item_right">
+          <span class="iconfont icon-more" style="font-weight: 700;color: #ABB8CB;"></span>
+        </view>
+      </view>
+    </navigator>
+    <navigator url="orderList" hover-class="navigator-hover">
+      <view class="_rows">
+        <view class="item_icon">
+          <span class="iconfont icon-manageorder" style="color:orange;font-size: 40rpx"></span>
+        </view>
+        <view class="item_title">我的订单</view>
+        <view class="item_right">
+          <span class="iconfont icon-more" style="font-weight: 700;color: #ABB8CB;"></span>
+        </view>
+      </view>
+    </navigator>
+    <navigator url="mySell" hover-class="navigator-hover">
+      <view class="_rows">
+        <view class="item_icon">
+          <span class="iconfont icon-similarproduct" style="color:orange;font-size: 40rpx"></span>
+        </view>
+        <view class="item_title">我出售的</view>
+        <view class="item_right">
+          <span class="iconfont icon-more" style="font-weight: 700;color: #ABB8CB;"></span>
+        </view>
+      </view>
+    </navigator>
+    <navigator url="groupBlooking" hover-class="navigator-hover">
+      <view class="_rows">
+        <view class="item_icon">
+          <span class="ico pt;" style="font-size: 40rpx"></span>
+        </view>
+        <view class="item_title">我的拼团</view>
+        <view class="item_right">
+          <span class="iconfont icon-more" style="font-weight: 700;color: #ABB8CB;"></span>
+        </view>
+      </view>
+    </navigator>
+    <navigator url="transactionRecord" hover-class="navigator-hover">
+      <view class="_rows">
+        <view class="item_icon">
+          <span class="iconfont icon-history" style="color:blue;font-size: 40rpx"></span>
+        </view>
+        <view class="item_title">交易记录</view>
+        <view class="item_right">
+          <span class="iconfont icon-more" style="font-weight: 700;color: #ABB8CB;"></span>
+        </view>
+      </view>
+    </navigator>
+    <!--<navigator url="productList?pageType=check" hover-class="navigator-hover">-->
+      <!--<view class="_rows">-->
+        <!--<view class="item_icon">-->
+          <!--<span class="iconfont icon-similarproduct" style="color: royalblue;font-size: 40rpx"></span>-->
+        <!--</view>-->
+        <!--<view class="item_title">我的商品</view>-->
+        <!--<view class="item_right">-->
+          <!--<span class="iconfont icon-more" style="font-weight: 700;color: #ABB8CB;"></span>-->
+        <!--</view>-->
+      <!--</view>-->
+    <!--</navigator>-->
+    <navigator url="help" hover-class="navigator-hover">
+      <view class="_rows">
+        <view class="item_icon">
+          <span class="iconfont icon-help" style="color:orangered;font-size: 40rpx"></span>
+        </view>
+        <view class="item_title">帮助中心</view>
+        <view class="item_right">
+          <span class="iconfont icon-more" style="font-weight: 700;color: #ABB8CB;"></span>
+        </view>
+      </view>
+    </navigator>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  export default class me extends wepy.component {
+    config = {
+      navigationBarTitleText: '我的',
+      navigationBarBackgroundColor: '#E01234',
+      navigationBarTextStyle: 'white'
+    };
+    data = {
+      weixinInfo: ''
+    };
+    getUserInfoData() {
+      let me = this;
+      me.weixinInfo = '';
+      wepy.login({
+        success: function(res) {
+          if (res.code) {
+            wepy.request({
+              url: `${me.$parent.$parent.APIServer}/guide/user`,
+              data: {jscode: res.code},
+              success: function (data) {
+                let result = data.data.data;
+                me.$parent.$parent.globalData['accessToken'] = result.accessToken;
+                me.$parent.$parent.globalData['userid'] = result.user.id;
+                me.$parent.$parent.globalData['openId'] = result.user.openId;
+                me.$parent.$parent.globalData['weixinInfo'] = result.user.weixinInfo;
+                me.weixinInfo = JSON.parse(result.user.weixinInfo);
+                me.$apply();
+              }
+            });
+          } else {
+            wepy.showModal({
+              title: '获取用户登录态失败！',
+              showCancel: false,
+              content: res.errMsg
+            });
+          }
+        }
+      });
+    }
+  }
+</script>

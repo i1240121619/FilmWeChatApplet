@@ -1,0 +1,503 @@
+<style>
+  ._content {
+    /*padding: 20rpx;*/
+    width: 100%;
+    background: #fff;
+    border-top: 1rpx solid #fbfbfb;
+  }
+  ._content2 {
+    margin: 20rpx 0;
+    width: 100%;
+    background: #fff;
+  }
+  ._content2 .title {
+    padding: 24rpx;
+  }
+  ._content .name {
+    font-size: 34rpx;
+    padding: 20rpx;
+    border-bottom:1rpx solid #eeeeee;
+    font-weight: bold;
+  }
+  ._content .description {
+    color: #bfbfbf;
+    font-size: 28rpx;
+    padding: 0 40rpx 20rpx 20rpx;
+  }
+  ._content .price {
+    font-size: 30rpx;
+    padding: 20rpx;
+    color: orangered;
+    display: flex;
+    align-items: baseline;
+  }
+  ._content .price .current{
+    text-align: left;
+    flex: 1;
+  }
+  ._content .price .current .text1 {
+    font-size: 30rpx;
+    color: #bfbfbf;
+    font-weight: bold;
+  }
+  ._content .price .current .text2 {
+    font-size: 36rpx;
+    color: #000;
+    font-weight: bold;
+  }
+  ._content .price .reduce{
+    text-align: center;
+  }
+  ._content .price .reduce .text1{
+    font-weight: bold;
+    font-size: 30rpx;
+    color: #E01234;
+  }
+  ._content .price .reduce .text2{
+    font-size: 50rpx;
+    color: #E01234;
+    font-weight: bold;
+  }
+  .fixedBtn {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    font-size:36rpx;
+    display: flex;
+  }
+  .inactive {
+    background: #bbb !important;
+    color: #fff !important;
+    border: none !important;
+  }
+  .leftBtn {
+    flex: 1;
+    background: #fff;
+    border: 4rpx solid #E01234;
+    color: #E01234;
+    text-align: center;
+    padding: 40rpx;
+  }
+  .rightBtn {
+    flex: 1;
+    background: #E01234;
+    color: #fff;
+    text-align: center;
+    padding: 40rpx;
+  }
+  .reductionPrice {
+    font-size: 30rpx;
+    color: #E01234;
+    margin-top: 20rpx;
+  }
+  ._status {
+    padding: 20rpx;
+    color: #E01234;
+    font-weight: bold;
+    border-bottom: 1rpx solid #eeeeee;
+  }
+  .pricingModal {
+    height: 170rpx;
+    width: 100%;
+    bottom: 0rpx;
+    position: fixed;
+    z-index: 1000;
+    background: #fff;
+  }
+  .lockMask {
+    background: #000;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    text-align: center;
+    color: #fff;
+    font-size: 34rpx;
+    width: 100%;
+    z-index: 1000;
+    opacity: 0.7;
+  }
+  .mask {
+    background: #000;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 999;
+    opacity: 0.7;
+  }
+  .priceBtn {
+    float: right;
+    background: #E01234;
+    text-align: center;
+    color: #fff;
+    font-size: 38rpx;
+    padding: 62rpx;
+  }
+  .inputPrice {
+    width: 460rpx;
+    display: inline-block;
+    margin: 30rpx;
+    border-bottom: 1rpx solid #cccccc;
+  }
+  ._content2 .title .text1 {
+    color: #bfbfbf;
+    color: 36rpx;
+    font-weight: 700;
+  }
+  ._content2 .title .text2 {
+    color: #000;
+    font-size: 30rpx;
+    font-weight: 700;
+  }
+  .orderUsers {
+    background: #fff;
+    margin: 20rpx 0;
+    padding: 30rpx 20rpx;
+  }
+  ._orders {
+    display: flex;
+    padding: 10rpx;
+    border-bottom: 1rpx solid #eeeeee;
+  }
+  .avatarBox {
+    vertical-align: middle;
+    margin: auto;
+    flex: 1;
+  }
+  .orderInfo {
+    flex: 5;
+  }
+  .listTitle {
+    text-align: center;
+    color: #E01234;
+    font-size: 30rpx;
+  }
+  .zw{
+    width: 100%;
+    height: 120rpx;
+  }
+  .ts-icon-pm:before{
+    content: "\e6c7";
+    font-size: 40rpx;
+  }
+</style>
+<template>
+  <hint wx:if="{{status == 1}}"/>
+  <banner />
+  <view class="_content">
+    <view class="name">{{name}}</view>
+    <view class="price">
+      <view class="current">
+        <text class='text1'>当前价: </text>
+        <text class='text2'>￥{{currentPrice}} </text>
+      </view>
+      <view class="reduce" wx:if="{{!isRemind}}">
+        <text wx:if="{{!isOver}}" class="text1">已降价</text>
+        <text wx:if="{{!isOver}}" class="text2">￥{{dropPrice}}</text>
+        <text wx:if="{{isFloor}}" class="text1">已降到底价！</text>
+      </view>
+      <view class="reduce" wx:else>
+        {{residualPriceReductionTime}}后开始降价
+      </view>
+    </view>
+  </view>
+  <view class="_content2">
+    <view class="title">
+      <span class="iconfont icon-clock" style="font-weight: 700;color: #bfbfbf;"></span>
+      <text class="text1"> 活动开始时间：</text><text class="text2">{{startTimeFormat}}</text>
+    </view>
+  </view>
+  <view class="_content2">
+    <view class="title">
+      <span class="iconfont icon-clock" style="font-weight: 700;color: #bfbfbf;"></span>
+      <text class="text1"> 活动截止时间：</text><text class="text2">{{endTimeFormat}}</text>
+    </view>
+  </view>
+  <view class="_content2" style="margin-top: 0" wx:if="{{goodType === 2}}">
+    <view class="title">
+      <span class="iconfont icon-clock" style="font-weight: 700;color: #bfbfbf;"></span>
+      <text class="text1"> 消费截止时间：</text><text class="text2">{{serviceEndTimeFormat}}</text>
+    </view>
+  </view>
+  <view class="_content2" wx:if="{{goodType === 2}}">
+    <view class="title">
+      <span class="iconfont icon-atm" style="font-weight: 700;color: #bfbfbf;"></span>
+      <text class="text1"> 商家联系方式：</text><text class="text2">{{phone}}</text>
+    </view>
+  </view>
+  <description :description.sync="description"/>
+  <rulerSecondDrop />
+  <view class="zw"></view>
+  <view wx:if="{{status !== 1}}">
+    <view class="fixedBtn">
+      <view class="rightBtn" @tap="check()"> 立即购买 <span class="ts-iconfont ts-icon-pm"></span></view>
+    </view>
+  </view>
+  <release :activityId.sync="activityId" :categoryId.sync="categoryId" :themeId.sync="themeId" :source.sync="source" wx:else/>
+  <alert/>
+  <maskAlert :statusType.sync="statusGroup" :describeStr.sync="describeStr" />
+  <activeStateCheck :activityId.sync="activityId" :APIServer.sync="APIServer" :accessToken.sync="accessToken" @goBuy.user="goBuy" :describeStr.sync="describeStr"/>
+</template>
+<script>
+  import wepy from 'wepy';
+  import {formatDate} from '../common/date';
+  import banner from '../components/banner';
+  import rulerSecondDrop from '../components/rulerSecondDrop';
+  import description from '../components/description';
+  import release from '../components/release';
+  import tool from '../common/tool';
+  import hint from '../components/hint';
+  import alert from '../components/alert';
+  import maskAlert from '../components/maskAlert';
+  import activeStateCheck from '../components/activeStateCheck';
+  export default class detailsSecondDrop extends wepy.component {
+    props = {
+      LoadingState: {
+        type: Number,
+        twoWay: true
+      },
+      isRemind: {
+        type: Number,
+        twoWay: true
+      }
+    };
+    data = {
+      themeId: '',
+      source: '',
+      id: '',
+      categoryId: '',
+      activityId: '',
+      productId: '',
+      goodType: '',
+      currentPrice: '',
+      filePaths: [],
+      name: '',
+      description: '',
+      salePrice: '',
+      floorPrice: '',
+      dropPrice: '',
+      startTime: '',
+      startTimeFormat: '',
+      createTime: '',
+      endTime: '',
+      endTimeFormat: '',
+      openServerCurrentTime: '',
+      openLocalCurrentTime: '',
+      discountStartTime: '', // 开始降价的时间
+      discountEndTime: '',
+      discountTime: '',
+      serviceEndTime: '',
+      serviceEndTimeFormat: '',
+      phone: '',
+      activityStartToDiscountStart: '',
+      discountCloseToActivityClose: '',
+      currentTime: '',
+      residualPriceReductionTime: '',
+      userId: '',
+      APIServer: '',
+      accessToken: '',
+      status: '', // 活动状态
+      quantity: '', // 商品库存
+      statusGroup: [],
+      isMe: false,
+      timerArr: [], // 定时器
+      describeStr: '活动暂时冻结，稍后再试！|活动已结束！|活动未发布！|商品已卖完！|暂时不能购买！',
+      type: 1 // 购买方式
+    };
+    components = {
+      banner,
+      rulerSecondDrop,
+      description,
+      release,
+      hint,
+      alert,
+      maskAlert,
+      activeStateCheck
+    };
+    onShareAppMessage() {
+      return {
+        title: `好东东就要分享！${this.proDetail.name}`,
+        imageUrl: this.proDetail.properties.filePaths[0],
+        success: function(res) {
+          wepy.showToast({
+            title: '分享成功',
+            icon: 'success',
+            duration: 1000
+          });
+        },
+        fail: function(res) {
+          wepy.showToast({
+            title: '分享成功失败',
+            image: '../assets/img/toast-icon.png',
+            duration: 1000
+          });
+        }
+      };
+    }
+    methods = {
+      check() {
+        let me = this;
+        me.$invoke('activeStateCheck', 'activeStateCheckFun');
+      },
+      showPricing() {
+        if (!this.isOver) {
+          this.isPricing = true;
+        }
+      },
+      goBuy() {
+        let me = this;
+        let data = {
+          activityId: me.activityId,
+          subOrders: [{
+            quantity: 1,
+            marketPrice: 0,
+            productId: me.productId,
+            id: me.id,
+            vendorId: me.userId
+          }],
+          type: me.type
+        };
+        wepy.request({
+          url: `${me.$parent.$parent.APIServer}/guide/order`,
+          method: 'POST',
+          header: {
+            'accessToken': me.$parent.$parent.globalData.accessToken
+          },
+          data: data,
+          success(data) {
+            let result = data.data;
+            if (result.stat === 406) {
+              me.$invoke('alert', 'alertFun', data.data.error);
+            } else {
+              let orders = {
+                dataArr: [{
+                  quantity: 1,
+                  marketPrice: 0,
+                  salePrice: result.data.orders[0].amount,
+                  Thumbnails: me.filePaths[0],
+                  name: me.name,
+                  productId: me.productId,
+                  id: me.id,
+                  vendorId: me.userId
+                }],
+                activityId: me.activityId,
+                categoryId: me.categoryId,
+                goodType: me.goodType,
+                total: result.data.total,
+                type: me.type,
+                orderId: result.data.orders[0].id
+              };
+              me.$parent.$parent.globalData.orders = orders;
+              wepy.navigateTo({
+                url: 'orderSure'
+              });
+            }
+          }
+        });
+      }
+    };
+    getProductDetail(id, status) {
+      let me = this;
+      wepy.request({
+        url: `${this.$parent.$parent.APIServer}/guide/activity/${id}`,
+        header: {
+          'accessToken': this.$parent.$parent.globalData.accessToken
+        },
+        success: function (data) {
+          let result = data.data.data;
+          if (result) {
+            me.LoadingState = 1;
+            me.openLocalCurrentTime = tool.localCurrentTime();
+            let properties = JSON.parse(result.properties);
+            me.filePaths = properties.filePaths;
+            me.id = result.id;
+            me.name = result.name;
+            me.description = result.description;
+            me.status = result.status;
+            me.activityStartToDiscountStart = result.extra.activityStartToDiscountStart;
+            me.discountCloseToActivityClose = result.extra.discountCloseToActivityClose;
+            me.discountTime = result.extra.discountTime;
+            me.createTime = result.createTime;
+            me.endTime = result.endTime;
+            me.openServerCurrentTime = result.currentTime;
+            me.salePrice = result.products[0].salePrice;
+            me.floorPrice = result.products[0].floorPrice;
+            me.userId = result.userId;
+            me.productId = result.products[0].productId;
+            me.goodType = result.products[0].type;
+            me.currentTime = me.openServerCurrentTime + (tool.localCurrentTime() - me.openLocalCurrentTime);
+            me.serviceEndTime = JSON.parse(result.products[0].properties).endTime;
+            me.serviceEndTimeFormat = formatDate(me.serviceEndTime, 'Y-m-d H:i');
+            me.phone = JSON.parse(result.products[0].properties).address.phone;
+            me.quantity = result.activityProducts[0].quantity;
+            me.statusGroup = {
+              status: me.status,
+              quantity: me.quantity
+            };
+            if (me.status === 1) { // 未发布
+              wepy.hideShareMenu();
+              me.discountStartTime = me.createTime + me.activityStartToDiscountStart;
+              me.discountEndTime = me.createTime + me.discountTime + me.discountCloseToActivityClose;
+              me.startTime = me.createTime;
+            } else {
+              me.discountStartTime = result.extra.discountStartTime;
+              me.discountEndTime = result.extra.discountEndTime;
+              me.startTime = result.startTime;
+            }
+            me.startTimeFormat = formatDate(me.startTime, 'Y-m-d H:i');
+            me.endTimeFormat = formatDate(me.endTime, 'Y-m-d H:i');
+            if (Number(me.$parent.$parent.globalData.userid) === me.userId) { // 是不是自己
+              me.isMe = true;
+            } else {
+              me.isMe = false;
+            }
+            let timer = setInterval(function() {
+              let currentTime = (tool.localCurrentTime() - me.openLocalCurrentTime) + me.openServerCurrentTime;
+              if (currentTime >= me.discountStartTime) {
+                me.currentPrice = tool.priceCalculation(me.salePrice, me.floorPrice, me.discountStartTime, currentTime);
+                me.dropPrice = (me.salePrice - me.currentPrice).toFixed(2);
+                me.isRemind = 0;
+              } else {
+                me.residualPriceReductionTime = tool.daysRemaining(me.discountStartTime - currentTime);
+                me.currentPrice = me.salePrice;
+                me.dropPrice = 0;
+                me.status === 1 ? (me.isRemind = 0) : (me.isRemind = 1);
+              }
+              me.$apply();
+            }, 1000);
+            me.timerArr.push(timer);
+          }
+        }
+      });
+    }
+    _clearInterval() {
+      let me = this;
+      for (let i = 0; i < me.timerArr.length; i++) {
+        clearInterval(me.timerArr[i]);
+      }
+      me.timerArr = [];
+    };
+    watch = {
+      filePaths (newValue, oldValue) {
+        this.$invoke('banner', 'filePathsFun', newValue);
+      }
+    };
+    onLoadFun(optionsStr) {
+      let me = this;
+      let options = JSON.parse(optionsStr);
+      me.source = options.source;
+      me.themeId = options.themeId;
+      me.categoryId = options.categoryId;
+      me.activityId = options.activityId;
+      me.APIServer = me.$parent.$parent.APIServer;
+      me.accessToken = me.$parent.$parent.globalData.accessToken;
+      me.getProductDetail(me.activityId);
+    }
+  }
+</script>

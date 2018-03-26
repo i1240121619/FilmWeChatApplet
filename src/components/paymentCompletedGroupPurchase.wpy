@@ -1,0 +1,261 @@
+<style>
+  .astrict{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .redcolor{
+    color:#df2e24;
+  }
+  .header-img{
+    height:540rpx;
+    text-align:center;
+    border-bottom:20rpx solid #eff3f2;
+  }
+  .header-img image{
+    weight:100%;
+    height:100%;
+  }
+  .content-loock{
+    text-align:center;
+    line-height:80rpx;
+    font-size:26rpx;
+    font-weight:900;
+  }
+  .content-invite{
+    weight:80%;
+    margin:0 auto;
+    text-align:center;
+    background:#df2e24 !important;
+    color:#fff !important;
+    font-size:30rpx;
+    border-radius:10rpx;
+  }
+  .content-share{
+    border-bottom:20rpx solid #eff3f2;
+  }
+  .group-quantity{
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    border-top:2rpx solid #e7e7e7;
+  }
+  .group-quantity-box{
+    width:80rpx;
+    height:80rpx;
+    border-radius:80rpx;
+    margin-right:20rpx;
+    box-sizing:border-box;
+    margin-top:20rpx;
+    position:relative;
+    text-align:center;
+  }
+  .group-quantity-box image{
+    display:black;
+    width:100%;
+    height:100%;
+    border-radius:80rpx;
+}
+  .group-quantity-box span{
+    font-size:40rpx;
+    line-height:80rpx;
+    color:#c7c7c7;
+}
+  .group-quantity-boss{
+    position: absolute;
+    top:-15rpx;
+    left:-3rpx;
+    z-index:20;
+    font-size:12px;
+    font-weight:900;
+    padding:3rpx 5rpx;
+    color:#ae7600;
+    background:#f9aa2b;
+    border-radius:12rpx;
+    border:2px solid #fff;
+}
+  .membersRadius{
+    border:4rpx dashed #c7c7c7 ;
+}
+  .bossRadius{
+    border:4rpx solid #eecc47 ;
+}
+  .footer-commodity{
+    border-top:2rpx solid #eff3f2;
+    border-bottom:2rpx solid #eff3f2;
+    line-height:80rpx;
+    font-size:28rpx;
+    color:#303030;
+    width:95%;
+    margin:0 auto;
+    margin-top:10rpx;
+    display:flex;
+    justify-content:space-between;
+}
+  .footer-titl{
+   flex:3;
+  }
+  .footer-name{
+    flex:6;
+    text-align:right;
+}
+</style>
+<template>
+  <view>
+    <view class="header-img">
+      <banner />
+    </view>
+    <view class="content-share">
+      <view class="content-loock" wx:if='userLimit'>
+        还差<span class="redcolor">{{userLimit}}</span>人， <span>{{activetime}}</span>后结束
+      </view>
+     <view style="padding:0 50rpx;">
+        <button class="content-invite" type="default" open-type="share" wx:if="{{userLimit !==0}}"> 参团成功，邀请好友参团</button>
+        <button class="content-invite" type="default" wx:else >参团成功，团已满</button>
+     </view>
+     <view class="content-loock" style="font-weight:400;">
+       分享到3个群后，成团率高达90%
+      </view>
+    </view>
+    <view class="group-quantity">
+        <view class="group-quantity-box bossRadius" wx:for="{{groupimage}}" wx:key="{{item}}">
+          <view class="group-quantity-boss" wx:if="{{item.captain}}">团长</view>
+          <image src="{{item.userAvatar}}"></image>
+        </view>
+        <view class="group-quantity-box membersRadius" wx:for="{{userLimit}}" wx:key="{{index}}">
+          <span>?</span>
+        </view>
+    </view>
+    <view class="footer-commodity">
+      <view class="footer-titl">商品名称:</view>
+      <view class="astrict  footer-name "  @tap="backgroup()">{{productname}}</view>
+      <view class="iconfont icon-more"></view>
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy';
+  // import {formatDate} from '../common/date';
+  import tool from '../common/tool';
+  import banner from '../components/banner';
+  export default class paymentCompletedGroupPurchase extends wepy.component {
+    props = {
+      productname: {
+        type: String,
+        twoWay: true
+      },
+      images: {
+          type: String,
+          twoWay: true
+      }
+    }
+    data = {
+      tuanId: '',
+      id: '',
+      quantity: '',
+      groupimage: [],
+      activetime: '',
+      times: '',
+      filePaths: [],
+      time: '',
+      userLimit: '',
+      userLimitone: '',
+      userLimittow: '',
+      timerArr: [],
+      categoryId: '',
+      activityId: '',
+      orderId: ''
+    };
+    components = {
+      banner: banner
+    };
+    methods = {
+      backgroup() {
+       wepy.navigateTo({
+          url: `eventDetails?categoryId=${this.categoryId}&activityId=${this.activityId}`
+        });
+      }
+    };
+    getinformation() {
+      let me = this;
+      wepy.request({
+        url: `${this.$parent.$parent.APIServer}/guide/tuan/${me.tuanId}`,
+        method: 'GET',
+        header: {
+          'accessToken': me.$parent.$parent.globalData.accessToken
+        },
+        success(data) {
+          let result = data.data.data;
+          me.quantity = result.activity.activityProducts[0].quantity;
+          me.images = JSON.parse(result.activity.properties).filePaths[0];
+          me.filePaths = JSON.parse(result.activity.properties).filePaths;
+          me.userLimit = JSON.parse(result.activity.properties).userLimit - result.userCount;
+          me.groupimage = result.tuanUser;
+          me.productname = result.activity.name;
+          me.time = result.endTime - tool.localCurrentTime();
+          me.activetime = tool.daysRemaining(me.time);
+          me.categoryId = result.activity.categoryId;
+          me.id = result.activity.id;
+          me.times = setInterval(function() {
+                me.activetime = tool.daysRemaining(--me.time);
+                me.$apply();
+            }, 1000);
+          me.timerArr.push(me.times);
+          me.$apply();
+        }
+      });
+    };
+    // 团购 创建/参加 团
+    setinformation() {
+      let me = this;
+      let tuanId;
+      if (me.tuanId === 'undefined') {
+        tuanId = 0;
+      } else {
+        tuanId = me.tuanId;
+      }
+      let postData = {
+            activityId: me.activityId,
+            tuanId: tuanId,
+            orderId: me.orderId
+      };
+      wepy.request({
+        url: `${this.$parent.$parent.APIServer}/guide/tuan/`,
+        method: 'POST',
+        header: {
+          'accessToken': me.$parent.$parent.globalData.accessToken
+        },
+        data: postData,
+        success(data) {
+          let result = data.data.data;
+          me.tuanId = result.tuanId;
+          me.getinformation();
+        }
+      });
+    };
+    _clearInterval() {
+      let me = this;
+      for (let i = 0; i < me.timerArr.length; i++) {
+        clearInterval(me.timerArr[i]);
+      }
+      me.timerArr = [];
+    };
+    watch = {
+      filePaths (newValue, oldValue) {
+        this.$invoke('banner', 'filePathsFun', newValue);
+      }
+    };
+    onLoadFun(optionsStr) {
+      let me = this;
+      let options = JSON.parse(optionsStr);
+      me.activityId = options.activityId;
+      me.orderId = options.orderId;
+      me.tuanId = options.tuanId;
+      me.setinformation();
+      me.$apply();
+      wepy.setNavigationBarTitle({
+        title: '参团详情'
+      });
+    }
+  };
+</script>

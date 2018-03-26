@@ -1,0 +1,71 @@
+<style>
+  .editShare {
+    color: #7b7b7b;
+    background: #fff;
+    height: 136rpx;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    border-top: 1px solid #dad9d6;
+    font-size: 24rpx;
+    white-space: nowrap;
+    z-index: 997;
+    display: flex;
+  }
+  button.editShare_item{
+    background: none;
+    text-decoration:none;
+    font-size:inherit;
+    line-height:inherit;
+  }
+  button.editShare_item::after {
+    border: none;
+  }
+  .editShare_item {
+    text-align: center;
+    padding-top: 20rpx;
+    flex: 1;
+    color: #83838f;
+  }
+  .edittitle {
+    padding-top: 6rpx;
+  }
+  .ts-release{
+    color: #E01234;
+  }
+  .ts-icon-release:before{
+    content: "\e658";
+  }
+  .ts-icon-yl:before{
+    content: "\e617";
+  }
+</style>
+<template>
+  <view class="editShare">
+    <button class="editShare_item ts-release" @tap="releaseChange()">
+      <span class="ts-iconfont ts-icon-release" style="font-size: 50rpx;"></span>
+      <view class="edittitle">发布</view>
+    </button>
+    <button class="editShare_item" @tap="saveAndPreviewChange()">
+      <span class="ts-iconfont ts-icon-yl" style="font-size: 50rpx;"></span>
+      <view class="edittitle">保存并预览</view>
+    </button>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy';
+  export default class editRelease extends wepy.component {
+    props = {
+    };
+    data = {
+    };
+    methods = {
+      releaseChange() {
+        this.$emit('releaseChange', '');
+      },
+      saveAndPreviewChange() {
+        this.$emit('saveAndPreviewChange', '');
+      }
+    };
+  }
+</script>

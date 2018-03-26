@@ -1,0 +1,19 @@
+<template>
+  <view class="groupBuy-content3" style="margin-bottom: 20rpx; padding-bottom:20rpx;">
+    <view class="groupBuy-content3-1 line">
+      <view class="_groupBuy-content3-1 groupBuy-content3-1-1">商品详情</view>
+    </view>
+    <view class="description">{{description}}</view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  export default class description extends wepy.component {
+    props = {
+      description: {
+        type: String
+      }
+    };
+  }
+</script>

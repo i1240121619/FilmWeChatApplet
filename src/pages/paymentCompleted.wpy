@@ -1,0 +1,95 @@
+<style>
+</style>
+<template>
+  <view wx:if="{{categoryId == 100}}">
+    <paymentCompletedCurrency />
+  </view>
+  <view wx:if="{{categoryId == 101}}">
+    <paymentCompletedCurrency />
+  </view>
+  <view wx:if="{{categoryId == 102}}">
+    <paymentCompletedGroupPurchase :productname="productname" :images="images" wx:if="{{buyType == 2}}"/>
+    <paymentCompletedCurrency  wx:if="{{buyType == 1}}"/>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy';
+  import paymentCompletedCurrency from '../components/paymentCompletedCurrency';
+  import paymentCompletedGroupPurchase from '../components/paymentCompletedGroupPurchase';
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '支付完成'
+    };
+    components = {
+      paymentCompletedCurrency,
+      paymentCompletedGroupPurchase
+    };
+    data = {
+      productname: '',
+      images: '',
+      categoryId: '',
+      activityId: '',
+      customObj: {},
+      orderId: '',
+      type: '',
+      tuanId: ''
+    };
+    methods = {
+    };
+    onHide() {
+      this.$invoke('paymentCompletedGroupPurchase', '_clearInterval');
+    };
+    onUnload() {
+      this.$invoke('paymentCompletedGroupPurchase', '_clearInterval');
+    };
+    onShareAppMessage(res) {
+      let me = this;
+      return {
+        title: `（团购活动）好东东就要分享! ${me.productname}`,
+        imageUrl: me.images,
+        path: `/pages/eventDetails?categoryId=${me.categoryId}&activityId=${me.customObj.customId}`,
+        success: function(res) {
+          wepy.showToast({
+            title: '分享成功',
+            icon: 'success',
+            duration: 1000
+          });
+        },
+        fail: function(res) {
+          wepy.showToast({
+            title: '分享失败',
+            image: '../assets/img/toast-icon.png',
+            duration: 1000
+          });
+        }
+      };
+    };
+    onLoad(options) {
+      wepy.showShareMenu({
+        withShareTicket: true
+      });
+      this.categoryId = options.categoryId;
+      this.activityId = options.activityId;
+      this.orderId = options.orderId;
+      this.type = options.type;
+      this.tuanId = options.tuanId;
+      let onLoadFunData = {
+        categoryId: this.categoryId,
+        activityId: this.activityId,
+        type: this.type,
+        tuanId: this.tuanId,
+        orderId: this.orderId
+      };
+      let componentName;
+      if (this.categoryId === '100') {
+        componentName = 'paymentCompletedCurrency';
+      } else if (this.categoryId === '102') {
+        componentName = 'paymentCompletedGroupPurchase';
+      } else if (this.categoryId === '103') {
+        componentName = 'paymentCompletedCurrency';
+      }
+      this.$invoke(componentName, 'onLoadFun', JSON.stringify(onLoadFunData));
+    }
+  }
+</script>

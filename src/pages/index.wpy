@@ -1,0 +1,135 @@
+<style lang="less">
+  .content {
+    height: 100%;
+    padding: 40rpx 20rpx;
+  }
+  .welcome {
+    height: 200rpx;
+    background: url('http://home.foolnofool.win:8008/assets/Group%202@3x.png');
+    background-size: 100%;
+  }
+  .welName {
+    font-size: 48rpx;
+    font-weight: 500;
+    color: #2978F5;
+    padding: 40rpx 0 30rpx 60rpx;
+  }
+  .welText {
+    font-size: 30rpx;
+    color: #686868;
+    padding: 0 0 30rpx 0;
+  }
+  .subBtn {
+    display: flex;
+  }
+  .subItem1 {
+    margin: 30rpx 0;
+    flex: 1;
+  }
+  .subItem2 {
+    margin: 30rpx 0 30rpx 30rpx;
+    flex: 1;
+  }
+  .tab_item {
+    height: 100%;
+  }
+</style>
+
+<template>
+  <!--<view class="welcome">-->
+    <!--<view class="userinfo" @tap="handleViewTap">-->
+      <!--<image class="userinfo-avatar" src="{{ userInfo.avatarUrl }}" background-size="cover"/>-->
+      <!--<view class="welName">欢迎你，推手 {{userInfo.nickName}} ~</view>-->
+      <!--<view class="welText">一键搞定 推广自营销</view>-->
+    <!--</view>-->
+  <!--</view>-->
+  <view wx:if="{{currentTab == 0}}">
+    <indexPage />
+  </view>
+  <view wx:if="{{currentTab == 1}}">
+    <allActivity />
+  </view>
+  <view wx:if="{{currentTab == 2}}">
+    <me />
+  </view>
+
+  <tab />
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import allActivity from '../components/allActivity';
+  import IndexPage from '../components/indexPage';
+  import me from '../components/me';
+  import Tab from '../components/tab';
+//  import Toast from 'wepy-com-toast';
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '首页',
+      navigationBarBackgroundColor: '#E01234',
+      backgroundTextStyle: 'dark',
+      navigationBarTextStyle: 'white',
+      enablePullDownRefresh: true
+    };
+    components = {
+      tab: Tab,
+      me: me,
+      indexPage: IndexPage,
+      allActivity: allActivity
+    };
+    data = {
+      mynum: 20,
+      userInfo: {
+        nickName: '加载中...'
+      },
+      count: 0,
+      netrst: '',
+      currentTab: 0
+    };
+    methods = {
+      addActivity(e) {
+        wepy.navigateTo({
+          url: 'activityList?type=1'
+        });
+      },
+      myRelease(e) {
+        wepy.navigateTo({
+          url: 'releaseList'
+        });
+      },
+      addProduct(e) {
+        wepy.navigateTo({
+          url: 'addGoods'
+        });
+      }
+    };
+    onReachBottom() {
+        if (this.currentTab === '1') {
+          this.$invoke('allActivity', 'onReachBottom');
+        }
+    }
+    onPullDownRefresh() {
+      if (this.currentTab === '1') {
+        this.$invoke('allActivity', 'onPullDownRefresh');
+      } else {
+        wepy.stopPullDownRefresh();
+      }
+    }
+    getData(idx) {
+      // this.$invoke('allActivity', '_clearInterval');
+      this.$apply();
+      if (idx === '1') {
+        this.$invoke('allActivity', 'getCategory');
+      } else if (idx === '2') {
+        this.$invoke('me', 'getUserInfoData');
+      }
+    }
+    onLoad(options) {
+      if (options.currentTab) {
+        this.currentTab = options.currentTab;
+        this.$apply();
+      }
+    }
+  }
+</script>
